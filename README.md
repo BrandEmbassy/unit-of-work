@@ -29,8 +29,9 @@ function doFunkyStuff(Document $document): UnitOfWork {
 }
 
 
-$unitOfWork = doBoringStuff($document);
-$unitOfWork->merge(doFunkyStuff($document));
+$boringWork = doBoringStuff($document);
+$funkyWork = doFunkyStuff($document)
+$unitOfWork = $boringWork->concatenate($funkyWork);
 
 // Every Processor has its own Accessor for Dependecy Injection Container
 $accessors = [new SaveDocumentOperationProcessorAccessor()]; 
