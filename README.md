@@ -39,7 +39,9 @@ $accessors = [new SaveDocumentOperationProcessorAccessor()];
 $naiveExecutor = new NaiveUnitOfWorkExecutor($accesors);
 $executor = new ReducingUnitOfWorkExecutor($naiveExecutor); // Decorator pattern to separate merging logic
 
-$executor->execute($unitOfWork);
+// And document will be saved only once if your SaveDocumentOperation is implemented
+// as mergable. See: `MergeableOperation` as example.
+$executor->execute($unitOfWork); 
 ```
 
 Example of usage inside Nette Dependecy Injection container:
