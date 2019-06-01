@@ -4,5 +4,9 @@ namespace BrandEmbassy\UnitOfWork;
 
 interface OperationProcessorAccessor
 {
-    public function get(): OperationProcessor;
+    /**
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint
+     * @return OperationProcessor
+     */
+    public function get();
 }
