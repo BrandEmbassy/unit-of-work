@@ -9,9 +9,9 @@ final class UnitOfWorkReducerTest extends TestCase
 {
     /**
      * @dataProvider operationsToReduceProvider
+     *
      * @param Operation[] $expectedOperationsAfterReduction
      * @param Operation[] $operationsToReduce
-     * @param Operation   $operationToReduceBy
      */
     public function testShouldReduceOperationsFromBeginning(
         array $expectedOperationsAfterReduction,

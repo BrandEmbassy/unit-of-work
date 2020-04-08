@@ -20,6 +20,7 @@ final class UnitOfWork
 
     /**
      * @param Operation[] $operations
+     *
      * @return UnitOfWork
      */
     public static function fromOperations(array $operations): self

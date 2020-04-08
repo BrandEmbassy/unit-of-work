@@ -23,7 +23,6 @@ final class NaiveUnitOfWorkExecutor implements UnitOfWorkExecutor
 
     /**
      * @param OperationProcessorAccessor[] $operationProcessorAccessors
-     * @param LoggerInterface              $logger
      */
     public function __construct(array $operationProcessorAccessors, LoggerInterface $logger)
     {

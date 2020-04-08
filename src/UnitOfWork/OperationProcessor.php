@@ -10,5 +10,8 @@ interface OperationProcessor
     public function getSupportedOperations(): array;
 
 
+    /**
+     * @throws UnableToProcessOperationException
+     */
     public function process(Operation $operation): void;
 }
