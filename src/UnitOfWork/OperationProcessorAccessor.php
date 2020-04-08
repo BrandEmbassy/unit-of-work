@@ -6,6 +6,8 @@ interface OperationProcessorAccessor
 {
     /**
      * @phpcsSuppress SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint
+     * @phpcsSuppress SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingNativeTypeHint
+     *
      * @return OperationProcessor
      */
     public function get();

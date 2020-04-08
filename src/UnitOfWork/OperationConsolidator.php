@@ -11,6 +11,7 @@ final class OperationConsolidator
 {
     /**
      * @param Operation[] $operations
+     *
      * @return Operation[]
      */
     public function consolidate(array $operations): array

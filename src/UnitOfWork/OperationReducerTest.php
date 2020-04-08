@@ -58,6 +58,7 @@ final class OperationReducerTest extends TestCase
 
     /**
      * @dataProvider trivialOperationsProvider
+     *
      * @param Operation[] $data
      */
     public function testShouldReduceTrivial(array $data): void

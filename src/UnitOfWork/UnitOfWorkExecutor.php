@@ -4,5 +4,8 @@ namespace BrandEmbassy\UnitOfWork;
 
 interface UnitOfWorkExecutor
 {
+    /**
+     * @throws UnableToProcessOperationException
+     */
     public function execute(UnitOfWork $unitOfWork): void;
 }
