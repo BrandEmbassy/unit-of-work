@@ -4,7 +4,7 @@ namespace BrandEmbassy\UnitOfWork;
 
 use PHPUnit\Framework\TestCase;
 
-final class OperationReducerTest extends TestCase
+final class OperationConsolidatorTest extends TestCase
 {
     public function testShouldReduce(): void
     {

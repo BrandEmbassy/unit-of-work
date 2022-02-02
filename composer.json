@@ -7,7 +7,7 @@
     }
   },
   "require": {
-    "php": "~7.2",
+    "php": "~7.4",
     "beberlei/assert": "^3.2",
     "dg/bypass-finals": "^1.1",
     "psr/log": "^1.1"
@@ -16,7 +16,7 @@
     "brandembassy/coding-standard": "^8.0",
     "mockery/mockery": "^1.0",
     "phpunit/phpunit": "^8",
-    "roave/security-advisories": "dev-master"
+    "roave/security-advisories": "dev-latest"
   },
   "scripts": {
     "phpcs": "vendor/bin/phpcs --standard=BrandEmbassyCodingStandard src",
