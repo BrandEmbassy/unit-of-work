@@ -2,10 +2,14 @@
 
 namespace BrandEmbassy\UnitOfWork;
 
+use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use function count;
 
-final class UnitOfWorkReducerTest extends TestCase
+/**
+ * @final
+ */
+class UnitOfWorkReducerTest extends TestCase
 {
     /**
      * @dataProvider operationsToReduceProvider
@@ -25,10 +29,10 @@ final class UnitOfWorkReducerTest extends TestCase
         $actualOperationsAfterReduction = $unitOfWorkAfterReduction->getOperations();
 
         $expectedOperationsCount = count($expectedOperationsAfterReduction);
-        self::assertCount($expectedOperationsCount, $actualOperationsAfterReduction);
+        Assert::assertCount($expectedOperationsCount, $actualOperationsAfterReduction);
 
         for ($i = 0; $i < $expectedOperationsCount; $i++) {
-            self::assertSame($expectedOperationsAfterReduction[$i], $actualOperationsAfterReduction[$i]);
+            Assert::assertSame($expectedOperationsAfterReduction[$i], $actualOperationsAfterReduction[$i]);
         }
     }
 

@@ -2,9 +2,13 @@
 
 namespace BrandEmbassy\UnitOfWork;
 
+use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 
-final class UnitOfWorkTest extends TestCase
+/**
+ * @final
+ */
+class UnitOfWorkTest extends TestCase
 {
     public function testShouldUnionUnitOfWork(): void
     {
@@ -16,19 +20,19 @@ final class UnitOfWorkTest extends TestCase
         $result = $unitOfWorkA->concatenate($unitOfWorkB);
         $operations = $result->getOperations();
 
-        self::assertNotSame($result, $unitOfWorkA);
-        self::assertNotSame($result, $unitOfWorkB);
-        self::assertCount(2, $operations);
+        Assert::assertNotSame($result, $unitOfWorkA);
+        Assert::assertNotSame($result, $unitOfWorkB);
+        Assert::assertCount(2, $operations);
 
         /** @var MergeableOperation $first */
         $first = $operations[0];
-        self::assertInstanceOf(MergeableOperation::class, $first);
-        self::assertEquals(1, $first->number);
+        Assert::assertInstanceOf(MergeableOperation::class, $first);
+        Assert::assertEquals(1, $first->number);
 
         /** @var MergeableOperation $second */
         $second = $operations[1];
-        self::assertInstanceOf(MergeableOperation::class, $second);
-        self::assertEquals(2, $second->number);
+        Assert::assertInstanceOf(MergeableOperation::class, $second);
+        Assert::assertEquals(2, $second->number);
     }
 
 
@@ -40,16 +44,16 @@ final class UnitOfWorkTest extends TestCase
         ];
 
         $unitOfWork = UnitOfWork::fromOperations($operations);
-        self::assertEquals($operations, $unitOfWork->getOperations());
+        Assert::assertEquals($operations, $unitOfWork->getOperations());
     }
 
 
     public function testShouldBeEmpty(): void
     {
         $unitOfWorkNotEmpty = UnitOfWork::fromOperations([new MergeableOperation(1)]);
-        self::assertFalse($unitOfWorkNotEmpty->isEmpty());
+        Assert::assertFalse($unitOfWorkNotEmpty->isEmpty());
 
         $unitOfWorkEmpty = UnitOfWork::fromOperations([]);
-        self::assertTrue($unitOfWorkEmpty->isEmpty());
+        Assert::assertTrue($unitOfWorkEmpty->isEmpty());
     }
 }

@@ -2,9 +2,13 @@
 
 namespace BrandEmbassy\UnitOfWork;
 
+use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 
-final class OperationReducerTest extends TestCase
+/**
+ * @final
+ */
+class OperationReducerTest extends TestCase
 {
     public function testShouldReduce(): void
     {
@@ -20,20 +24,20 @@ final class OperationReducerTest extends TestCase
 
         $result = $reducer->consolidate($operations);
 
-        self::assertCount(4, $result);
+        Assert::assertCount(4, $result);
         /** @var MergeableOperation $mergedOperation */
         $mergedOperation = $result[0];
-        self::assertInstanceOf(MergeableOperation::class, $mergedOperation);
-        self::assertEquals(3, $mergedOperation->number);
+        Assert::assertInstanceOf(MergeableOperation::class, $mergedOperation);
+        Assert::assertEquals(3, $mergedOperation->number);
 
-        self::assertInstanceOf(NotMergeableOperation::class, $result[1]);
-        self::assertInstanceOf(NotMergeableOperation::class, $result[2]);
-        self::assertNotSame($result[1], $result[2]);
+        Assert::assertInstanceOf(NotMergeableOperation::class, $result[1]);
+        Assert::assertInstanceOf(NotMergeableOperation::class, $result[2]);
+        Assert::assertNotSame($result[1], $result[2]);
 
         /** @var MergeableOperation $lastNotMergerOperation */
         $lastNotMergerOperation = $result[3];
-        self::assertInstanceOf(MergeableOperation::class, $lastNotMergerOperation);
-        self::assertEquals(4, $lastNotMergerOperation->number);
+        Assert::assertInstanceOf(MergeableOperation::class, $lastNotMergerOperation);
+        Assert::assertEquals(4, $lastNotMergerOperation->number);
     }
 
 
@@ -48,11 +52,11 @@ final class OperationReducerTest extends TestCase
 
         $result = $reducer->consolidate($operations);
 
-        self::assertCount(1, $result);
+        Assert::assertCount(1, $result);
         /** @var MergeableOperation $mergedOperation */
         $mergedOperation = $result[0];
-        self::assertInstanceOf(MergeableOperation::class, $mergedOperation);
-        self::assertEquals(3, $mergedOperation->number);
+        Assert::assertInstanceOf(MergeableOperation::class, $mergedOperation);
+        Assert::assertEquals(3, $mergedOperation->number);
     }
 
 
@@ -64,7 +68,7 @@ final class OperationReducerTest extends TestCase
     public function testShouldReduceTrivial(array $data): void
     {
         $reducer = new OperationConsolidator();
-        self::assertEquals($data, $reducer->consolidate($data));
+        Assert::assertEquals($data, $reducer->consolidate($data));
     }
 
 

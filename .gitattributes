@@ -4,4 +4,3 @@
 phpstan.neon export-ignore
 phpunit.neon export-ignore
 *Test.php export-ignore
-BypassFinalHook.php export-ignore

@@ -4,7 +4,10 @@ namespace BrandEmbassy\UnitOfWork;
 
 use AssertionError;
 
-final class AlienOperation implements Operation
+/**
+ * @final
+ */
+class AlienOperation implements Operation
 {
     public function canBeMergedWith(Operation $nextOperation): bool
     {

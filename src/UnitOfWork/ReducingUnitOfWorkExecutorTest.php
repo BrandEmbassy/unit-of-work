@@ -6,7 +6,10 @@ use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
 
-final class ReducingUnitOfWorkExecutorTest extends TestCase
+/**
+ * @final
+ */
+class ReducingUnitOfWorkExecutorTest extends TestCase
 {
     use MockeryPHPUnitIntegration;
 

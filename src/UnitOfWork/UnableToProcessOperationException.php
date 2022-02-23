@@ -5,7 +5,10 @@ namespace BrandEmbassy\UnitOfWork;
 use Exception;
 use Throwable;
 
-final class UnableToProcessOperationException extends Exception
+/**
+ * @final
+ */
+class UnableToProcessOperationException extends Exception
 {
     public static function byOther(Throwable $exception): self
     {

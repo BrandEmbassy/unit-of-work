@@ -4,7 +4,10 @@ namespace BrandEmbassy\UnitOfWork;
 
 use function assert;
 
-final class MergeableOperation implements Operation
+/**
+ * @final
+ */
+class MergeableOperation implements Operation
 {
     /**
      * @var int

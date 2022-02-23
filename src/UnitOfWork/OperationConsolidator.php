@@ -7,7 +7,10 @@ use function array_reverse;
 use function array_values;
 use function count;
 
-final class OperationConsolidator
+/**
+ * @final
+ */
+class OperationConsolidator
 {
     /**
      * @param Operation[] $operations
