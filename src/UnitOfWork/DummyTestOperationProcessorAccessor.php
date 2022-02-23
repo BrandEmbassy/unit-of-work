@@ -2,7 +2,10 @@
 
 namespace BrandEmbassy\UnitOfWork;
 
-final class DummyTestOperationProcessorAccessor implements OperationProcessorAccessor
+/**
+ * @final
+ */
+class DummyTestOperationProcessorAccessor implements OperationProcessorAccessor
 {
     /**
      * @var OperationProcessor

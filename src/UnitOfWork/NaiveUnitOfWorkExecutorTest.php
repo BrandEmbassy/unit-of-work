@@ -8,7 +8,10 @@ use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 
-final class NaiveUnitOfWorkExecutorTest extends TestCase
+/**
+ * @final
+ */
+class NaiveUnitOfWorkExecutorTest extends TestCase
 {
     use MockeryPHPUnitIntegration;
 

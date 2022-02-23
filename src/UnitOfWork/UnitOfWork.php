@@ -4,7 +4,10 @@ namespace BrandEmbassy\UnitOfWork;
 
 use function count;
 
-final class UnitOfWork
+/**
+ * @final
+ */
+class UnitOfWork
 {
     /**
      * @var Operation[]

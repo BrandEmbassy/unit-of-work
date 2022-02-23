@@ -2,7 +2,10 @@
 
 namespace BrandEmbassy\UnitOfWork;
 
-final class ReducingUnitOfWorkExecutor implements UnitOfWorkExecutor
+/**
+ * @final
+ */
+class ReducingUnitOfWorkExecutor implements UnitOfWorkExecutor
 {
     /**
      * @var OperationConsolidator

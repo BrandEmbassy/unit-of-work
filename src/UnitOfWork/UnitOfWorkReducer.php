@@ -4,7 +4,10 @@ namespace BrandEmbassy\UnitOfWork;
 
 use function count;
 
-final class UnitOfWorkReducer
+/**
+ * @final
+ */
+class UnitOfWorkReducer
 {
     public function reduceFromBeginning(UnitOfWork $unitOfWorkToReduce, Operation $operationToReduceBy): UnitOfWork
     {

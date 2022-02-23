@@ -4,7 +4,10 @@ namespace BrandEmbassy\UnitOfWork;
 
 use LogicException;
 
-final class NotMergeableOperation implements Operation
+/**
+ * @final
+ */
+class NotMergeableOperation implements Operation
 {
     public function canBeMergedWith(Operation $nextOperation): bool
     {

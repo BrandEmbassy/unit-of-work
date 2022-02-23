@@ -8,7 +8,10 @@ use function get_class;
 use function in_array;
 use function sprintf;
 
-final class NaiveUnitOfWorkExecutor implements UnitOfWorkExecutor
+/**
+ * @final
+ */
+class NaiveUnitOfWorkExecutor implements UnitOfWorkExecutor
 {
     /**
      * @var OperationProcessorAccessor[]
