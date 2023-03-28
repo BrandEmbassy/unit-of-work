@@ -1,5 +1,9 @@
 includes:
-	- vendor/brandembassy/coding-standard/default-phpstan.neon
+    - vendor/brandembassy/coding-standard/default-phpstan.neon
+    - phpstan-baseline.neon
 
 parameters:
-    ignoreErrors:
+    paths:
+        - src
+
+    tmpDir: temp/phpstan

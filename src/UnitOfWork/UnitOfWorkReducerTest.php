@@ -40,7 +40,7 @@ class UnitOfWorkReducerTest extends TestCase
     /**
      * @return Operation[][]|Operation[][][]
      */
-    public function operationsToReduceProvider(): array
+    public static function operationsToReduceProvider(): array
     {
         $mergeableOperation1 = new MergeableOperation(1);
         $mergeableOperation2 = new MergeableOperation(2);

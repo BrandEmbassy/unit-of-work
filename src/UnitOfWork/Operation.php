@@ -4,8 +4,8 @@ namespace BrandEmbassy\UnitOfWork;
 
 interface Operation
 {
-    public function canBeMergedWith(Operation $nextOperation): bool;
+    public function canBeMergedWith(self $nextOperation): bool;
 
 
-    public function mergeWith(Operation $nextOperation): Operation;
+    public function mergeWith(self $nextOperation): self;
 }
