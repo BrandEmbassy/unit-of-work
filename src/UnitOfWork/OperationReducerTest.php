@@ -75,7 +75,7 @@ class OperationReducerTest extends TestCase
     /**
      * @return Operation[][][]
      */
-    public function trivialOperationsProvider(): array
+    public static function trivialOperationsProvider(): array
     {
         return [
             [[]],

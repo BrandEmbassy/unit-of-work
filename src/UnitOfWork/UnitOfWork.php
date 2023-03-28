@@ -23,8 +23,6 @@ class UnitOfWork
 
     /**
      * @param Operation[] $operations
-     *
-     * @return UnitOfWork
      */
     public static function fromOperations(array $operations): self
     {
@@ -44,7 +42,7 @@ class UnitOfWork
     }
 
 
-    public function concatenate(UnitOfWork $otherUnitOfWork): UnitOfWork
+    public function concatenate(self $otherUnitOfWork): self
     {
         $unitOfWork = new self();
 
