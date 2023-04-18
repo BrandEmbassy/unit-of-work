@@ -4,6 +4,7 @@ namespace BrandEmbassy\UnitOfWork;
 
 use Nette\StaticClass;
 use PHPUnit\Framework\TestCase;
+use function array_map;
 use function count;
 use function get_class;
 use function implode;
