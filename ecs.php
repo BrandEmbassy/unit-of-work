@@ -1,5 +1,6 @@
 <?php declare(strict_types = 1);
 
+use PhpCsFixer\Fixer\Strict\StrictComparisonFixer;
 use Symplify\EasyCodingStandard\Config\ECSConfig;
 
 $defaultEcsConfigurationSetup = require 'vendor/brandembassy/coding-standard/default-ecs.php';
@@ -12,7 +13,11 @@ return static function (ECSConfig $ecsConfig) use ($defaultEcsConfigurationSetup
         'ecs.php',
     ]);
 
-    $skipList = [];
+    $skipList = [
+        StrictComparisonFixer::class => [
+            __DIR__ . '/src/UnitOfWork/UnitOfWorkAssertions.php',
+        ],
+    ];
 
     $ecsConfig->skip(array_merge($defaultSkipList, $skipList));
 };
