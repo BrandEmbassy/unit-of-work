@@ -26,12 +26,12 @@ class UnitOfWorkAssertions
         foreach ($resultUnitOfWork->getOperations() as $resultOperation) {
             $remainingOperations = [];
             foreach ($expectedOperations as $expectedOperation) {
-                // phpcs:disable
+                // ecs:disable
                 /** @noinspection TypeUnsafeComparisonInspection */
                 if ($expectedOperation == $resultOperation) {
                     continue;
                 }
-                // phpcs:enable
+                // ecs:enable
 
                 $remainingOperations[] = $expectedOperation;
             }
