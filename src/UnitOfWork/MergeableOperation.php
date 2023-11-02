@@ -21,16 +21,36 @@ class MergeableOperation implements Operation
     }
 
 
-    public function canBeMergedWith(Operation $nextOperation): bool
+    public function canBeMergedFrom(Operation $operation): bool
     {
-        return $nextOperation instanceof self;
+        return $operation instanceof self;
     }
 
 
-    public function mergeWith(Operation $nextOperation): Operation
+    public function mergeFrom(Operation $operation): Operation
     {
-        assert($nextOperation instanceof self);
+        assert($operation instanceof self);
 
-        return new self($this->number + $nextOperation->number);
+        return new self($this->number + $operation->number);
+    }
+
+
+    public function canBeMergedTo(Operation $operation): bool
+    {
+        return $operation instanceof self;
+    }
+
+
+    public function mergeTo(Operation $operation): Operation
+    {
+        assert($operation instanceof self);
+
+        return new self($this->number + $operation->number);
+    }
+
+
+    public function isChainBreakFor(Operation $operation): bool
+    {
+        return true;
     }
 }

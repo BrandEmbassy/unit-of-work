@@ -34,8 +34,8 @@ class OperationConsolidator
             /** @var Operation $current */
             $current = array_pop($operations);
 
-            if ($previous->canBeMergedWith($current)) {
-                $merged[] = $previous->mergeWith($current);
+            if ($previous->canBeMergedTo($current)) {
+                $merged[] = $previous->mergeTo($current);
             } else {
                 $merged[] = $previous;
                 $merged[] = $current;

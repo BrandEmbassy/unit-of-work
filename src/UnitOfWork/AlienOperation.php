@@ -9,14 +9,32 @@ use AssertionError;
  */
 class AlienOperation implements Operation
 {
-    public function canBeMergedWith(Operation $nextOperation): bool
+    public function canBeMergedFrom(Operation $operation): bool
     {
         return false;
     }
 
 
-    public function mergeWith(Operation $nextOperation): Operation
+    public function mergeFrom(Operation $operation): Operation
     {
         throw new AssertionError();
+    }
+
+
+    public function canBeMergedTo(Operation $operation): bool
+    {
+        return false;
+    }
+
+
+    public function mergeTo(Operation $operation): Operation
+    {
+        throw new AssertionError();
+    }
+
+
+    public function isChainBreakFor(Operation $operation): bool
+    {
+        return true;
     }
 }

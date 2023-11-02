@@ -16,7 +16,7 @@ class UnitOfWorkReducer
         $operationsAfterReduction = [];
         $index = 0;
 
-        while (count($operations) > $index && $operations[$index]->canBeMergedWith($operationToReduceBy)) {
+        while (count($operations) > $index && $operations[$index]->canBeMergedTo($operationToReduceBy)) {
             $index++;
         }
         while (count($operations) > $index) {
