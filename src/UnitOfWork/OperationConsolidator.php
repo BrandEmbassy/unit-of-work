@@ -2,24 +2,19 @@
 
 namespace BrandEmbassy\UnitOfWork;
 
-use function array_pop;
-use function array_reverse;
 use function array_values;
 use function count;
 
 /**
+ * TODO: test this class
+ *
  * @final
  */
 class OperationConsolidator
 {
-    /**
-     * TODO
-     * hide logging behind FT?
-     * discuss with infra regarding load
-     */
-//    public function __construct(LoggerInterface)
-//    {
-//    }
+    public function __construct(FeatureStateResolver $featureStateResolver, LoggerInterface $logger)
+    {
+    }
 
 
     /**
@@ -29,12 +24,6 @@ class OperationConsolidator
      */
     public function consolidate(array $operations): array
     {
-        /*
-         * TODO
-         * Implement logging of how the operations were merged together and what is the result.
-         * Logging will be hidden behind FT.
-         */
-
         if ($operations === []) {
             return [];
         }
@@ -43,33 +32,37 @@ class OperationConsolidator
 
         $consolidatedOperations = [];
 
-        /*
-         * TODO: create IsMergeableOperation interface
-         */
         foreach ($operations as $index => $operation) {
-            if (!$operation instanceof IsMergeableOperation) {
-                $consolidatedOperations[] = $operation;
+            $mergeOperationIndex = $index;
+            if (!$operation instanceof MergeableOperation) {
+                $consolidatedOperations[$mergeOperationIndex] = $operation;
                 continue;
             }
 
             $mergedOperation = $operation;
 
             for ($i = $index + 1; $i < $operationsCount; $i++) {
-                if ($operations[$i]->isChainBreakFor($mergedOperation)) {
-                    $consolidatedOperations[] = $mergedOperation;
+                $nextOperation = $operations[$i];
+                if ($nextOperation->isChainBreakFor($mergedOperation)) {
+                    $consolidatedOperations[$mergeOperationIndex] = $mergedOperation;
                     continue 2;
                 }
 
-                if ($operation->canBeMergedWith($operations[$i])) {
-                    $mergedOperation = $operation->mergeWith($operations[$i]);
+                if (!$nextOperation instanceof MergeableOperation) {
+                    continue;
+                }
+
+                if ($operation->canBeMergedWith($nextOperation)) {
+                    $mergedOperation = $operation->mergeWith($nextOperation);
+                    $mergeOperationIndex = $i;
                 }
             }
 
-            $consolidatedOperations[] = $mergedOperation;
+            $consolidatedOperations[$mergeOperationIndex] = $mergedOperation;
         }
 
+        ksort($consolidatedOperations);
 
-
-        return $consolidatedOperations;
+        return array_values($consolidatedOperations);
     }
 }
