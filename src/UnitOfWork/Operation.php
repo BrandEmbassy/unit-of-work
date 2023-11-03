@@ -10,11 +10,6 @@ interface Operation
      */
     public function canBeMergedWith(self $nextOperation): bool;
 
-    /*
-     * Always FALSE for now - meaning that operations won't merge until we explicitly say so
-     */
-    public function isMergeable(): bool;
-
 
     /**
      * ?

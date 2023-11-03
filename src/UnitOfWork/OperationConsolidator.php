@@ -43,8 +43,11 @@ class OperationConsolidator
 
         $consolidatedOperations = [];
 
+        /*
+         * TODO: create IsMergeableOperation interface
+         */
         foreach ($operations as $index => $operation) {
-            if (!$operation->isMergeable()) {
+            if (!$operation instanceof IsMergeableOperation) {
                 $consolidatedOperations[] = $operation;
                 continue;
             }
