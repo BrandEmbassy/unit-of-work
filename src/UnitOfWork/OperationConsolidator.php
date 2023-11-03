@@ -29,6 +29,12 @@ class OperationConsolidator
      */
     public function consolidate(array $operations): array
     {
+        /*
+         * TODO
+         * Implement logging of how the operations were merged together and what is the result.
+         * Logging will be hidden behind FT.
+         */
+
         if ($operations === []) {
             return [];
         }
@@ -51,8 +57,8 @@ class OperationConsolidator
                     continue 2;
                 }
 
-                if ($operation->canBeMergedWith($operations[$i], new NullLogger())) {
-                    $mergedOperation = $operation->mergeWith($operations[$i], new NullLogger());
+                if ($operation->canBeMergedWith($operations[$i])) {
+                    $mergedOperation = $operation->mergeWith($operations[$i]);
                 }
             }
 

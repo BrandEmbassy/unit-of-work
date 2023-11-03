@@ -8,7 +8,7 @@ interface Operation
      * Mit moznost logovat proc
      * Kdyz je FT vypnuta, sem posleme NullLogger
      */
-    public function canBeMergedWith(self $nextOperation, LoggerInterface $logger): bool;
+    public function canBeMergedWith(self $nextOperation): bool;
 
     /*
      * Always FALSE for now - meaning that operations won't merge until we explicitly say so
@@ -21,17 +21,11 @@ interface Operation
      * Mit moznost logovat proc
      * Kdyz je FT vypnuta, sem posleme NullLogger
      */
-    public function mergeWith(self $nextOperation, LoggerInterface $logger): self;
+    public function mergeWith(self $nextOperation): self;
 
 
     /*
      * Always TRUE for now - meaning that operations won't merge if there is another operation in between them.
      */
     public function isChainBreakFor(self $operation): bool;
-
-
-    /*
-     * Define how it will be logged
-     */
-    public function toString(): string;
 }
