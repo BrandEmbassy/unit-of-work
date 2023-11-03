@@ -4,26 +4,34 @@ namespace BrandEmbassy\UnitOfWork;
 
 interface Operation
 {
-    public function canBeMergedFrom(self $operation): bool;
-
+    /**
+     * Mit moznost logovat proc
+     * Kdyz je FT vypnuta, sem posleme NullLogger
+     */
+    public function canBeMergedWith(self $nextOperation, LoggerInterface $logger): bool;
 
     /*
-     * Merging with previous operation - meaning that this operation is staying and the other one is removed.
+     * Always FALSE for now - meaning that operations won't merge until we explicitly say so
      */
-    public function mergeFrom(self $operation): self;
+    public function isMergeable(): bool;
 
 
-    public function canBeMergedTo(self $operation): bool;
-
-
-    /*
-     * Merging with following operation - meaning that this operation is removed and the other one is staying.
+    /**
+     * ?
+     * Mit moznost logovat proc
+     * Kdyz je FT vypnuta, sem posleme NullLogger
      */
-    public function mergeTo(self $operation): self;
+    public function mergeWith(self $nextOperation, LoggerInterface $logger): self;
 
 
     /*
      * Always TRUE for now - meaning that operations won't merge if there is another operation in between them.
      */
     public function isChainBreakFor(self $operation): bool;
+
+
+    /*
+     * Define how it will be logged
+     */
+    public function toString(): string;
 }

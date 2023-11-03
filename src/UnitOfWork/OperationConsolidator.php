@@ -13,6 +13,16 @@ use function count;
 class OperationConsolidator
 {
     /**
+     * TODO
+     * hide logging behind FT?
+     * discuss with infra regarding load
+     */
+//    public function __construct(LoggerInterface)
+//    {
+//    }
+
+
+    /**
      * @param Operation[] $operations
      *
      * @return Operation[]
@@ -23,25 +33,34 @@ class OperationConsolidator
             return [];
         }
 
-        /** @var Operation[] $operations */
-        $operations = array_values(array_reverse($operations));
-        /** @var Operation[] $merged */
-        $merged = [array_pop($operations)];
+        $operationsCount = count($operations);
 
-        while (count($operations) > 0) {
-            /** @var Operation $previous */
-            $previous = array_pop($merged);
-            /** @var Operation $current */
-            $current = array_pop($operations);
+        $consolidatedOperations = [];
 
-            if ($previous->canBeMergedTo($current)) {
-                $merged[] = $previous->mergeTo($current);
-            } else {
-                $merged[] = $previous;
-                $merged[] = $current;
+        foreach ($operations as $index => $operation) {
+            if (!$operation->isMergeable()) {
+                $consolidatedOperations[] = $operation;
+                continue;
             }
+
+            $mergedOperation = $operation;
+
+            for ($i = $index + 1; $i < $operationsCount; $i++) {
+                if ($operations[$i]->isChainBreakFor($mergedOperation)) {
+                    $consolidatedOperations[] = $mergedOperation;
+                    continue 2;
+                }
+
+                if ($operation->canBeMergedWith($operations[$i], new NullLogger())) {
+                    $mergedOperation = $operation->mergeWith($operations[$i], new NullLogger());
+                }
+            }
+
+            $consolidatedOperations[] = $mergedOperation;
         }
 
-        return $merged;
+
+
+        return $consolidatedOperations;
     }
 }
