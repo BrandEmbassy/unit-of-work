@@ -23,7 +23,7 @@ class NaiveUnitOfWorkExecutorTest extends TestCase
         $executor = new NaiveUnitOfWorkExecutor($accessors, new NullLogger());
 
         $unitOfWork = new UnitOfWork();
-        $unitOfWork->registerOperation(new MergeableOperation(1));
+        $unitOfWork->registerOperation(new DefaultMergeableOperation(1));
         $unitOfWork->registerOperation(new NotMergeableOperation());
 
         $executor->execute($unitOfWork);
@@ -37,7 +37,7 @@ class NaiveUnitOfWorkExecutorTest extends TestCase
     {
         /** @var MockInterface&OperationProcessor $mock */
         $mock = Mockery::mock(OperationProcessor::class);
-        $mock->shouldReceive('getSupportedOperations')->twice()->andReturn([MergeableOperation::class]);
+        $mock->shouldReceive('getSupportedOperations')->twice()->andReturn([DefaultMergeableOperation::class]);
         $mock->shouldReceive('process')->once();
 
         return $mock;

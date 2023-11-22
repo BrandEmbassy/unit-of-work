@@ -2,35 +2,10 @@
 
 namespace BrandEmbassy\UnitOfWork;
 
-use function assert;
-
-/**
- * @final
- */
-class MergeableOperation implements Operation
+interface MergeableOperation extends Operation
 {
-    /**
-     * @var int
-     */
-    public $number;
+    public function canBeMergedWith(self $nextOperation): bool;
 
 
-    public function __construct(int $number)
-    {
-        $this->number = $number;
-    }
-
-
-    public function canBeMergedWith(Operation $nextOperation): bool
-    {
-        return $nextOperation instanceof self;
-    }
-
-
-    public function mergeWith(Operation $nextOperation): Operation
-    {
-        assert($nextOperation instanceof self);
-
-        return new self($this->number + $nextOperation->number);
-    }
+    public function mergeWith(self $nextOperation): self;
 }

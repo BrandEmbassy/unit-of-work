@@ -4,7 +4,6 @@ namespace BrandEmbassy\UnitOfWork;
 
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
-use function count;
 
 /**
  * @final
@@ -42,8 +41,8 @@ class UnitOfWorkReducerTest extends TestCase
      */
     public static function operationsToReduceProvider(): array
     {
-        $mergeableOperation1 = new MergeableOperation(1);
-        $mergeableOperation2 = new MergeableOperation(2);
+        $mergeableOperation1 = new DefaultMergeableOperation(1);
+        $mergeableOperation2 = new DefaultMergeableOperation(2);
 
         $notMergeableOperation1 = new NotMergeableOperation();
         $notMergeableOperation2 = new NotMergeableOperation();
@@ -52,37 +51,37 @@ class UnitOfWorkReducerTest extends TestCase
             [
                 [$notMergeableOperation1, $notMergeableOperation2],
                 [$mergeableOperation1, $notMergeableOperation1, $notMergeableOperation2],
-                new MergeableOperation(3),
+                new DefaultMergeableOperation(3),
             ],
             [
                 [$notMergeableOperation1, $notMergeableOperation2],
                 [$mergeableOperation1, $mergeableOperation2, $notMergeableOperation1, $notMergeableOperation2],
-                new MergeableOperation(3),
+                new DefaultMergeableOperation(3),
             ],
             [
                 [$notMergeableOperation1, $notMergeableOperation2],
                 [$notMergeableOperation1, $notMergeableOperation2],
-                new MergeableOperation(3),
+                new DefaultMergeableOperation(3),
             ],
             [
                 [$notMergeableOperation1, $notMergeableOperation2, $mergeableOperation1],
                 [$notMergeableOperation1, $notMergeableOperation2, $mergeableOperation1],
-                new MergeableOperation(3),
+                new DefaultMergeableOperation(3),
             ],
             [
                 [],
                 [$mergeableOperation1],
-                new MergeableOperation(3),
+                new DefaultMergeableOperation(3),
             ],
             [
                 [],
                 [$mergeableOperation1, $mergeableOperation2],
-                new MergeableOperation(3),
+                new DefaultMergeableOperation(3),
             ],
             [
                 [],
                 [],
-                new MergeableOperation(3),
+                new DefaultMergeableOperation(3),
             ],
             [
                 [$notMergeableOperation1, $notMergeableOperation2, $mergeableOperation1],
