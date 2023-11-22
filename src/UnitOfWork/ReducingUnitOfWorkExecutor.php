@@ -31,7 +31,12 @@ class ReducingUnitOfWorkExecutor implements UnitOfWorkExecutor
         ?bool $shouldUseNewConsolidationWithDryRun = null,
         ?bool $shouldUseNewConsolidation = null
     ): void {
-        $operations = $this->consolidator->consolidate($unitOfWork->getOperations());
+        $operations = $this->consolidator->consolidate(
+            $unitOfWork->getOperations(),
+            $shouldLogUnitOfWorkOperationConsolidation ?? false,
+            $shouldUseNewConsolidationWithDryRun ?? false,
+            $shouldUseNewConsolidation ?? false,
+        );
         $reducedUnitOfWork = UnitOfWork::fromOperations($operations);
         $this->unitOfWorkExecutor->execute($reducedUnitOfWork);
     }

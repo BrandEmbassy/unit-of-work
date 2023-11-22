@@ -17,7 +17,12 @@ class OperationConsolidator
      *
      * @return Operation[]
      */
-    public function consolidate(array $operations): array
+    public function consolidate(
+        array $operations,
+        bool $shouldLogUnitOfWorkOperationConsolidation,
+        bool $shouldUseNewConsolidationWithDryRun,
+        bool $shouldUseNewConsolidation
+    ): array
     {
         if ($operations === []) {
             return [];
