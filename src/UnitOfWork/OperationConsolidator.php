@@ -12,17 +12,37 @@ use function count;
  */
 class OperationConsolidator
 {
-    public function __construct(FeatureStateResolver $featureStateResolver, LoggerInterface $logger)
+    private LoggerInterface $logger;
+
+
+    public function __construct(LoggerInterface $logger)
     {
+        $this->logger = $logger;
+    }
+
+    public function consolidate(array $operations): array
+    {
+        if ('FT dry run enabled') {
+            if ('FT enabled') {
+                return $this->consolidateTheNewWay($operations);
+            } else {
+                // So that the merging process is just logged without any changes to actual data returned from Consolidator.
+                $this->consolidateTheNewWay($operations);
+            }
+        }
+
+        return $this->consolidateTheOldWay($operations);
     }
 
 
     /**
+     * This is the new way of merging.
+     *
      * @param Operation[] $operations
      *
      * @return Operation[]
      */
-    public function consolidate(array $operations): array
+    private function consolidateTheNewWay(array $operations): array
     {
         if ($operations === []) {
             return [];
@@ -64,5 +84,41 @@ class OperationConsolidator
         ksort($consolidatedOperations);
 
         return array_values($consolidatedOperations);
+    }
+
+
+    /**
+     * This is the original way of merging.
+     *
+     * @param Operation[] $operations
+     *
+     * @return Operation[]
+     */
+    private function consolidateTheOldWay(array $operations): array
+    {
+        if ($operations === []) {
+            return [];
+        }
+
+        /** @var Operation[] $operations */
+        $operations = array_values(array_reverse($operations));
+        /** @var Operation[] $merged */
+        $merged = [array_pop($operations)];
+
+        while (count($operations) > 0) {
+            /** @var Operation $previous */
+            $previous = array_pop($merged);
+            /** @var Operation $current */
+            $current = array_pop($operations);
+
+            if ($previous->canBeMergedWith($current)) {
+                $merged[] = $previous->mergeWith($current);
+            } else {
+                $merged[] = $previous;
+                $merged[] = $current;
+            }
+        }
+
+        return $merged;
     }
 }
