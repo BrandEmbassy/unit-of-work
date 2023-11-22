@@ -7,5 +7,10 @@ interface UnitOfWorkExecutor
     /**
      * @throws UnableToProcessOperationException
      */
-    public function execute(UnitOfWork $unitOfWork): void;
+    public function execute(
+        UnitOfWork $unitOfWork,
+        ?bool $shouldLogUnitOfWorkOperationConsolidation = null,
+        ?bool $shouldUseNewConsolidationWithDryRun = null,
+        ?bool $shouldUseNewConsolidation = null
+    ): void;
 }
