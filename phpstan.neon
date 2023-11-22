@@ -1,6 +1,5 @@
 includes:
     - vendor/brandembassy/coding-standard/default-phpstan.neon
-    - phpstan-baseline.neon
 
 parameters:
     paths:

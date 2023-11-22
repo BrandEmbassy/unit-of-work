@@ -4,8 +4,5 @@ namespace BrandEmbassy\UnitOfWork;
 
 interface Operation
 {
-    public function canBeMergedWith(self $nextOperation): bool;
-
-
-    public function mergeWith(self $nextOperation): self;
+    // TODO: isChainBreak will be added here
 }

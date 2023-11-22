@@ -8,35 +8,33 @@ use PHPUnit\Framework\TestCase;
 /**
  * @final
  */
-class OperationReducerTest extends TestCase
+class OperationConsolidatorTest extends TestCase
 {
     public function testShouldReduce(): void
     {
         $reducer = new OperationConsolidator();
 
         $operations = [
-            new MergeableOperation(1),
-            new MergeableOperation(2),
+            new DefaultMergeableOperation(1),
+            new DefaultMergeableOperation(2),
             new NotMergeableOperation(),
             new NotMergeableOperation(),
-            new MergeableOperation(4),
+            new DefaultMergeableOperation(4),
         ];
 
         $result = $reducer->consolidate($operations);
 
         Assert::assertCount(4, $result);
-        /** @var MergeableOperation $mergedOperation */
         $mergedOperation = $result[0];
-        Assert::assertInstanceOf(MergeableOperation::class, $mergedOperation);
+        Assert::assertInstanceOf(DefaultMergeableOperation::class, $mergedOperation);
         Assert::assertEquals(3, $mergedOperation->number);
 
         Assert::assertInstanceOf(NotMergeableOperation::class, $result[1]);
         Assert::assertInstanceOf(NotMergeableOperation::class, $result[2]);
         Assert::assertNotSame($result[1], $result[2]);
 
-        /** @var MergeableOperation $lastNotMergerOperation */
         $lastNotMergerOperation = $result[3];
-        Assert::assertInstanceOf(MergeableOperation::class, $lastNotMergerOperation);
+        Assert::assertInstanceOf(DefaultMergeableOperation::class, $lastNotMergerOperation);
         Assert::assertEquals(4, $lastNotMergerOperation->number);
     }
 
@@ -46,16 +44,15 @@ class OperationReducerTest extends TestCase
         $reducer = new OperationConsolidator();
 
         $operations = [
-            new MergeableOperation(1),
-            new MergeableOperation(2),
+            new DefaultMergeableOperation(1),
+            new DefaultMergeableOperation(2),
         ];
 
         $result = $reducer->consolidate($operations);
 
         Assert::assertCount(1, $result);
-        /** @var MergeableOperation $mergedOperation */
         $mergedOperation = $result[0];
-        Assert::assertInstanceOf(MergeableOperation::class, $mergedOperation);
+        Assert::assertInstanceOf(DefaultMergeableOperation::class, $mergedOperation);
         Assert::assertEquals(3, $mergedOperation->number);
     }
 
@@ -79,7 +76,7 @@ class OperationReducerTest extends TestCase
     {
         return [
             [[]],
-            [[new MergeableOperation(666)]],
+            [[new DefaultMergeableOperation(666)]],
         ];
     }
 }
