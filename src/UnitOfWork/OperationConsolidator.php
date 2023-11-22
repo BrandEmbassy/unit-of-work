@@ -1,5 +1,6 @@
 <?php declare(strict_types = 1);
-
+// phpcs:ignoreFile -- this is not a core file
+// TODO: remove after the booleans are used
 namespace BrandEmbassy\UnitOfWork;
 
 use function array_pop;
