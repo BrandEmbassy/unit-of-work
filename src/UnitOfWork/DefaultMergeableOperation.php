@@ -2,6 +2,8 @@
 
 namespace BrandEmbassy\UnitOfWork;
 
+use function assert;
+
 /**
  * @final
  */

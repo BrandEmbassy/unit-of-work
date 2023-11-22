@@ -4,6 +4,7 @@ namespace BrandEmbassy\UnitOfWork;
 
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
+use function count;
 
 /**
  * @final
