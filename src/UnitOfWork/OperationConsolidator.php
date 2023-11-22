@@ -1,11 +1,11 @@
 <?php declare(strict_types = 1);
-// phpcs:ignoreFile -- this is not a core file
-// TODO: remove after the booleans are used
+
 namespace BrandEmbassy\UnitOfWork;
 
 use function array_pop;
 use function array_reverse;
 use function array_values;
+use function assert;
 use function count;
 
 /**
@@ -24,6 +24,10 @@ class OperationConsolidator
         bool $shouldUseNewConsolidationWithDryRun,
         bool $shouldUseNewConsolidation
     ): array {
+        assert(!$shouldLogUnitOfWorkOperationConsolidation);
+        assert(!$shouldUseNewConsolidationWithDryRun);
+        assert(!$shouldUseNewConsolidation);
+
         if ($operations === []) {
             return [];
         }
