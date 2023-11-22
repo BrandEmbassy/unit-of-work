@@ -22,8 +22,7 @@ class OperationConsolidator
         bool $shouldLogUnitOfWorkOperationConsolidation,
         bool $shouldUseNewConsolidationWithDryRun,
         bool $shouldUseNewConsolidation
-    ): array
-    {
+    ): array {
         if ($operations === []) {
             return [];
         }
