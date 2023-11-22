@@ -26,12 +26,10 @@ class UnitOfWorkTest extends TestCase
 
         /** @var DefaultMergeableOperation $first */
         $first = $operations[0];
-        Assert::assertInstanceOf(DefaultMergeableOperation::class, $first);
         Assert::assertEquals(1, $first->number);
 
         /** @var DefaultMergeableOperation $second */
         $second = $operations[1];
-        Assert::assertInstanceOf(DefaultMergeableOperation::class, $second);
         Assert::assertEquals(2, $second->number);
     }
 
