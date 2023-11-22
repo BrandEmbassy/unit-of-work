@@ -7,14 +7,14 @@
     }
   },
   "require": {
-    "php": "^7.4 || >=8.1",
+    "php": ">=8.1",
     "beberlei/assert": "^3.2",
     "psr/log": "^1.1"
   },
   "require-dev": {
-    "brandembassy/coding-standard": "10.0.0-beta",
+    "brandembassy/coding-standard": "11.0",
     "mockery/mockery": "^1.5.1",
-    "nette/utils": "^2.4 || ^3.0",
+    "nette/utils": "^3.0",
     "phpunit/phpunit": "^9.6.6",
     "roave/security-advisories": "dev-latest"
   },
