@@ -27,13 +27,13 @@ class ReducingUnitOfWorkExecutor implements UnitOfWorkExecutor
 
     public function execute(
         UnitOfWork $unitOfWork,
-        ?OperationConsolidationMode $operationConsolidationMode = null
+        OperationConsolidationMode $operationConsolidationMode = new OperationConsolidationMode()
     ): void {
         $operations = $this->consolidator->consolidate(
             $unitOfWork->getOperations(),
-            $operationConsolidationMode ?? new OperationConsolidationMode(false, false, false),
+            $operationConsolidationMode,
         );
         $reducedUnitOfWork = UnitOfWork::fromOperations($operations);
-        $this->unitOfWorkExecutor->execute($reducedUnitOfWork);
+        $this->unitOfWorkExecutor->execute($reducedUnitOfWork, $operationConsolidationMode);
     }
 }

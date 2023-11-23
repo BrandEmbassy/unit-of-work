@@ -5,7 +5,6 @@ namespace BrandEmbassy\UnitOfWork;
 use function array_pop;
 use function array_reverse;
 use function array_values;
-use function assert;
 use function count;
 
 /**
@@ -22,10 +21,21 @@ class OperationConsolidator
         array $operations,
         OperationConsolidationMode $operationConsolidationMode
     ): array {
-        assert(!$operationConsolidationMode->isLoggingEnabled());
-        assert(!$operationConsolidationMode->isDryRunUnlimitedConsolidation());
-        assert(!$operationConsolidationMode->isUnlimitedConsolidation());
+        if ($operationConsolidationMode->isDryRunUnlimitedConsolidation()) {
+            return $this->consolidateOld($operations);
+        }
 
+        return $this->consolidateOld($operations);
+    }
+
+
+    /**
+     * @param Operation[] $operations
+     *
+     * @return Operation[]
+     */
+    private function consolidateOld(array $operations): array
+    {
         if ($operations === []) {
             return [];
         }
