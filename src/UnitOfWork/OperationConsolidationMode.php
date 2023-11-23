@@ -8,9 +8,27 @@ namespace BrandEmbassy\UnitOfWork;
 class OperationConsolidationMode
 {
     public function __construct(
-        private readonly bool $shouldLogUnitOfWorkOperationConsolidation,
-        bool $shouldUseNewConsolidationWithDryRun,
-        bool $shouldUseNewConsolidation
+        private readonly bool $isLoggingEnabled,
+        private readonly bool $isDryRunUnlimitedConsolidation,
+        private readonly bool $isUnlimitedConsolidation
     ) {
+    }
+
+
+    public function isLoggingEnabled(): bool
+    {
+        return $this->isLoggingEnabled;
+    }
+
+
+    public function isDryRunUnlimitedConsolidation(): bool
+    {
+        return $this->isDryRunUnlimitedConsolidation;
+    }
+
+
+    public function isUnlimitedConsolidation(): bool
+    {
+        return $this->isUnlimitedConsolidation;
     }
 }

@@ -20,13 +20,11 @@ class OperationConsolidator
      */
     public function consolidate(
         array $operations,
-        bool $shouldLogUnitOfWorkOperationConsolidation,
-        bool $shouldUseNewConsolidationWithDryRun,
-        bool $shouldUseNewConsolidation
+        OperationConsolidationMode $operationConsolidationMode
     ): array {
-        assert(!$shouldLogUnitOfWorkOperationConsolidation);
-        assert(!$shouldUseNewConsolidationWithDryRun);
-        assert(!$shouldUseNewConsolidation);
+        assert(!$operationConsolidationMode->isLoggingEnabled());
+        assert(!$operationConsolidationMode->isDryRunUnlimitedConsolidation());
+        assert(!$operationConsolidationMode->isUnlimitedConsolidation());
 
         if ($operations === []) {
             return [];

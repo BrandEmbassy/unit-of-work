@@ -9,8 +9,6 @@ interface UnitOfWorkExecutor
      */
     public function execute(
         UnitOfWork $unitOfWork,
-        ?bool $shouldLogUnitOfWorkOperationConsolidation = null,
-        ?bool $shouldUseNewConsolidationWithDryRun = null,
-        ?bool $shouldUseNewConsolidation = null
+        ?OperationConsolidationMode $operationConsolidationMode = null
     ): void;
 }
