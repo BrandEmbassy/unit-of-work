@@ -27,7 +27,7 @@ class ReducingUnitOfWorkExecutor implements UnitOfWorkExecutor
 
     public function execute(
         UnitOfWork $unitOfWork,
-        OperationConsolidationMode $operationConsolidationMode = new OperationConsolidationMode()
+        OperationConsolidationMode $operationConsolidationMode
     ): void {
         $operations = $this->consolidator->consolidate(
             $unitOfWork->getOperations(),
