@@ -9,12 +9,9 @@ use function assert;
  */
 class DefaultMergeableOperation implements MergeableOperation
 {
-    public int $number;
-
-
-    public function __construct(int $number)
-    {
-        $this->number = $number;
+    public function __construct(
+        public readonly string $text
+    ) {
     }
 
 
@@ -28,6 +25,6 @@ class DefaultMergeableOperation implements MergeableOperation
     {
         assert($nextOperation instanceof self);
 
-        return new self($this->number + $nextOperation->number);
+        return new self($this->text . $nextOperation->text);
     }
 }
