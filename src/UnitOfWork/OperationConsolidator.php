@@ -6,6 +6,7 @@ use function array_pop;
 use function array_reverse;
 use function array_values;
 use function count;
+use function ksort;
 
 /**
  * @final
@@ -55,7 +56,7 @@ class OperationConsolidator
         $mergeOperationIndex = 0;
         $consolidatedOperations = [];
 
-        $this->merge($consolidatedOperations, $operations, $operationsCount, $operations[$mergeOperationIndex], $mergeOperationIndex);
+        $this->merge($consolidatedOperations, $operations, $operationsCount, $mergeOperationIndex);
 
         ksort($consolidatedOperations);
 
@@ -63,24 +64,36 @@ class OperationConsolidator
     }
 
 
-    private function merge(array &$consolidatedOperations, array &$operations, int $operationsCount, ?Operation $currentOperation, int $currentOperationIndex): void
-    {
+    /**
+     * @param Operation[] $consolidatedOperations
+     * @param array<int, Operation|null> $operations
+     */
+    private function merge(
+        array &$consolidatedOperations,
+        array &$operations,
+        int $operationsCount,
+        int $currentOperationIndex
+    ): void {
         $nextOperationIndex = $currentOperationIndex + 1;
+
+        if ($nextOperationIndex === $operationsCount + 1) {
+            return;
+        }
+
+        $currentOperation = $operations[$currentOperationIndex];
+
         if ($currentOperation === null) {
-            if ($nextOperationIndex === $operationsCount) {
-                return;
-            }
-            $this->merge($consolidatedOperations, $operations, $operationsCount, $operations[$nextOperationIndex], $nextOperationIndex);
+            $this->merge($consolidatedOperations, $operations, $operationsCount, $nextOperationIndex);
+
             return;
         }
 
         if (!$currentOperation instanceof MergeableOperation) {
             $operations[$currentOperationIndex] = null;
             $consolidatedOperations[$currentOperationIndex] = $currentOperation;
-            if ($nextOperationIndex === $operationsCount) {
-                return;
-            }
-            $this->merge($consolidatedOperations, $operations, $operationsCount, $operations[$nextOperationIndex], $nextOperationIndex);
+
+            $this->merge($consolidatedOperations, $operations, $operationsCount, $nextOperationIndex);
+
             return;
         }
 
@@ -103,10 +116,7 @@ class OperationConsolidator
 
         $consolidatedOperations[$lastMergedOperationIndex] = $mergedOperation;
 
-        if ($nextOperationIndex === $operationsCount) {
-            return;
-        }
-        $this->merge($consolidatedOperations, $operations, $operationsCount, $operations[$nextOperationIndex], $nextOperationIndex);
+        $this->merge($consolidatedOperations, $operations, $operationsCount, $nextOperationIndex);
     }
 
 

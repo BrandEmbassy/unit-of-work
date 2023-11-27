@@ -4,6 +4,7 @@ namespace BrandEmbassy\UnitOfWork;
 
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
+use function assert;
 
 /**
  * @final
@@ -11,10 +12,10 @@ use PHPUnit\Framework\TestCase;
 class OperationConsolidatorTest extends TestCase
 {
     /**
+     * @dataProvider operationsDataProvider
+     *
      * @param array<int, Operation> $expectedOperations
      * @param array<int, Operation> $operationsToMerge
-     *
-     * @dataProvider operationsDataProvider
      */
     public function testNewMerging(
         array $expectedOperations,
@@ -44,7 +45,7 @@ class OperationConsolidatorTest extends TestCase
                 'expectedOperations' => [
                     new DefaultMergeableOperation('a'),
                     new NotMergeableOperation(),
-                    new DefaultMergeableOperation('bc'),
+                    new DefaultMergeableOperation('b+c'),
                     new NotMergeableOperation(),
                     new NotMergeableOperation(),
                     new DefaultMergeableOperation('d'),
@@ -65,8 +66,8 @@ class OperationConsolidatorTest extends TestCase
                     new NotMergeableOperation(),
                     new NotMergeableOperation(),
                     new NotMergeableOperation(),
-                    new DefaultMergeableOperation('abcd'),
-                    $this->createAnotherMergeableOperation('abc'),
+                    new DefaultMergeableOperation('a+b+c+d'),
+                    $this->createAnotherMergeableOperation('a+b+c'),
                 ],
                 'operationsToMerge' => [
                     new DefaultMergeableOperation('a'),
@@ -86,7 +87,7 @@ class OperationConsolidatorTest extends TestCase
                 'expectedOperations' => [
                     new DefaultMergeableOperation('a'),
                     new NotMergeableOperation(),
-                    new DefaultMergeableOperation('bc'),
+                    new DefaultMergeableOperation('b+c'),
                     new NotMergeableOperation(),
                     new NotMergeableOperation(),
                     new DefaultMergeableOperation('d'),
@@ -130,7 +131,7 @@ class OperationConsolidatorTest extends TestCase
             ],
             'Two mergeable operations to merge' => [
                 'expectedOperations' => [
-                    new DefaultMergeableOperation('ab'),
+                    new DefaultMergeableOperation('a+b'),
                 ],
                 'operationsToMerge' => [
                     new DefaultMergeableOperation('a'),
@@ -208,7 +209,7 @@ class OperationConsolidatorTest extends TestCase
     {
         return [
             [[]],
-            [[new DefaultMergeableOperation('aaa')]],
+            [[new DefaultMergeableOperation('a+a+a')]],
         ];
     }
 
@@ -232,7 +233,7 @@ class OperationConsolidatorTest extends TestCase
             {
                 assert($nextOperation instanceof self);
 
-                return new self($this->text . $nextOperation->text);
+                return new self($this->text . '+' . $nextOperation->text);
             }
         };
     }
