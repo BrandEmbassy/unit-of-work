@@ -22,7 +22,7 @@ class OperationConsolidatorTest extends TestCase
             new DefaultMergeableOperation(4),
         ];
 
-        $result = $reducer->consolidate($operations);
+        $result = $reducer->consolidate($operations, new OperationConsolidationMode());
 
         Assert::assertCount(4, $result);
         $mergedOperation = $result[0];
@@ -48,7 +48,7 @@ class OperationConsolidatorTest extends TestCase
             new DefaultMergeableOperation(2),
         ];
 
-        $result = $reducer->consolidate($operations);
+        $result = $reducer->consolidate($operations, new OperationConsolidationMode());
 
         Assert::assertCount(1, $result);
         $mergedOperation = $result[0];
@@ -65,7 +65,7 @@ class OperationConsolidatorTest extends TestCase
     public function testShouldReduceTrivial(array $data): void
     {
         $reducer = new OperationConsolidator();
-        Assert::assertEquals($data, $reducer->consolidate($data));
+        Assert::assertEquals($data, $reducer->consolidate($data, new OperationConsolidationMode()));
     }
 
 

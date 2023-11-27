@@ -26,7 +26,7 @@ class NaiveUnitOfWorkExecutorTest extends TestCase
         $unitOfWork->registerOperation(new DefaultMergeableOperation(1));
         $unitOfWork->registerOperation(new NotMergeableOperation());
 
-        $executor->execute($unitOfWork);
+        $executor->execute($unitOfWork, new OperationConsolidationMode());
     }
 
 

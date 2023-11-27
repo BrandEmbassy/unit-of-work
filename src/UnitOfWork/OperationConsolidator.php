@@ -17,7 +17,24 @@ class OperationConsolidator
      *
      * @return Operation[]
      */
-    public function consolidate(array $operations): array
+    public function consolidate(
+        array $operations,
+        OperationConsolidationMode $operationConsolidationMode
+    ): array {
+        if ($operationConsolidationMode->isDryRunUnlimitedConsolidation()) {
+            return $this->consolidateOld($operations);
+        }
+
+        return $this->consolidateOld($operations);
+    }
+
+
+    /**
+     * @param Operation[] $operations
+     *
+     * @return Operation[]
+     */
+    private function consolidateOld(array $operations): array
     {
         if ($operations === []) {
             return [];

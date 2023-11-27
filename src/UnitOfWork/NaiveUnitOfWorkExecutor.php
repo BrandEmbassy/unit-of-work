@@ -35,8 +35,10 @@ class NaiveUnitOfWorkExecutor implements UnitOfWorkExecutor
     }
 
 
-    public function execute(UnitOfWork $unitOfWork): void
-    {
+    public function execute(
+        UnitOfWork $unitOfWork,
+        OperationConsolidationMode $operationConsolidationMode
+    ): void {
         foreach ($unitOfWork->getOperations() as $operation) {
             $this->logger->info(sprintf('Executing operation %s.', get_class($operation)));
 

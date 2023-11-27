@@ -20,7 +20,7 @@ class ReducingUnitOfWorkExecutorTest extends TestCase
         $parentExecutor = Mockery::spy(UnitOfWorkExecutor::class);
         $executor = new ReducingUnitOfWorkExecutor($parentExecutor, $consolidator);
 
-        $executor->execute(new UnitOfWork());
+        $executor->execute(new UnitOfWork(), new OperationConsolidationMode());
 
         $consolidator->shouldHaveReceived('consolidate');
         $parentExecutor->shouldHaveReceived('execute');

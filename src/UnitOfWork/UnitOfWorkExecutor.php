@@ -7,5 +7,8 @@ interface UnitOfWorkExecutor
     /**
      * @throws UnableToProcessOperationException
      */
-    public function execute(UnitOfWork $unitOfWork): void;
+    public function execute(
+        UnitOfWork $unitOfWork,
+        OperationConsolidationMode $operationConsolidationMode
+    ): void;
 }
