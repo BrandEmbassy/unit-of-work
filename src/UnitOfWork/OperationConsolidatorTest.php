@@ -10,29 +10,135 @@ use PHPUnit\Framework\TestCase;
  */
 class OperationConsolidatorTest extends TestCase
 {
-    public function testNewMerging(): void
-    {
+    /**
+     * @param array<int, Operation> $expectedOperations
+     * @param array<int, Operation> $operationsToMerge
+     *
+     * @dataProvider operationsDataProvider
+     */
+    public function testNewMerging(
+        array $expectedOperations,
+        array $operationsToMerge,
+        OperationConsolidationMode $consolidationMode
+    ): void {
         $reducer = new OperationConsolidator();
 
-        $operations = [
-            new DefaultMergeableOperation(1),
-            new NotMergeableOperation(),
-            new DefaultMergeableOperation(2),
-            new NotMergeableOperation(),
-            new NotMergeableOperation(),
-            new DefaultMergeableOperation(4),
-        ];
-
-        $result = $reducer->consolidate($operations, new OperationConsolidationMode(true, true, true));
+        $result = $reducer->consolidate($operationsToMerge, $consolidationMode);
 
         Assert::assertContainsOnlyInstancesOf(Operation::class, $result);
-        $expectedOperations = [
-            new NotMergeableOperation(),
-            new NotMergeableOperation(),
-            new NotMergeableOperation(),
-            new DefaultMergeableOperation(7),
-        ];
         Assert::assertEquals($expectedOperations, $result);
+    }
+
+
+    /**
+     * @return array<string, array<string, mixed>>
+     */
+    public function operationsDataProvider(): array
+    {
+        $dryRunUnlimitedMode = new OperationConsolidationMode(false, true, false);
+        $unlimitedMode = new OperationConsolidationMode(false, true, true);
+        $neighboursOnlyMode = new OperationConsolidationMode(false, false, false);
+
+        return [
+            'New merging dry run. Expected only neighbouring operations to merge' => [
+                'expectedOperations' => [
+                    new DefaultMergeableOperation('a'),
+                    new NotMergeableOperation(),
+                    new DefaultMergeableOperation('bc'),
+                    new NotMergeableOperation(),
+                    new NotMergeableOperation(),
+                    new DefaultMergeableOperation('d'),
+                ],
+                'operationsToMerge' => [
+                    new DefaultMergeableOperation('a'),
+                    new NotMergeableOperation(),
+                    new DefaultMergeableOperation('b'),
+                    new DefaultMergeableOperation('c'),
+                    new NotMergeableOperation(),
+                    new NotMergeableOperation(),
+                    new DefaultMergeableOperation('d'),
+                ],
+                'consolidationMode' => $dryRunUnlimitedMode,
+            ],
+            'New merging enabled. All mergeable operations are merged' => [
+                'expectedOperations' => [
+                    new NotMergeableOperation(),
+                    new NotMergeableOperation(),
+                    new NotMergeableOperation(),
+                    new DefaultMergeableOperation('abcd'),
+                    $this->createAnotherMergeableOperation('abc'),
+                ],
+                'operationsToMerge' => [
+                    new DefaultMergeableOperation('a'),
+                    new NotMergeableOperation(),
+                    $this->createAnotherMergeableOperation('a'),
+                    new DefaultMergeableOperation('b'),
+                    $this->createAnotherMergeableOperation('b'),
+                    new DefaultMergeableOperation('c'),
+                    new NotMergeableOperation(),
+                    new NotMergeableOperation(),
+                    new DefaultMergeableOperation('d'),
+                    $this->createAnotherMergeableOperation('c'),
+                ],
+                'consolidationMode' => $unlimitedMode,
+            ],
+            'New merging disabled' => [
+                'expectedOperations' => [
+                    new DefaultMergeableOperation('a'),
+                    new NotMergeableOperation(),
+                    new DefaultMergeableOperation('bc'),
+                    new NotMergeableOperation(),
+                    new NotMergeableOperation(),
+                    new DefaultMergeableOperation('d'),
+                ],
+                'operationsToMerge' => [
+                    new DefaultMergeableOperation('a'),
+                    new NotMergeableOperation(),
+                    new DefaultMergeableOperation('b'),
+                    new DefaultMergeableOperation('c'),
+                    new NotMergeableOperation(),
+                    new NotMergeableOperation(),
+                    new DefaultMergeableOperation('d'),
+                ],
+                'consolidationMode' => $neighboursOnlyMode,
+            ],
+
+            'No operations to merge' => [
+                'expectedOperations' => [],
+                'operationsToMerge' => [],
+                'consolidationMode' => $unlimitedMode,
+            ],
+            'No mergeable operations to merge' => [
+                'expectedOperations' => [
+                    new NotMergeableOperation(),
+                    new NotMergeableOperation(),
+                ],
+                'operationsToMerge' => [
+                    new NotMergeableOperation(),
+                    new NotMergeableOperation(),
+                ],
+                'consolidationMode' => $unlimitedMode,
+            ],
+            'One mergeable operation to merge' => [
+                'expectedOperations' => [
+                    new DefaultMergeableOperation('a'),
+                ],
+                'operationsToMerge' => [
+                    new DefaultMergeableOperation('a'),
+                ],
+                'consolidationMode' => $unlimitedMode,
+            ],
+            'Two mergeable operations to merge' => [
+                'expectedOperations' => [
+                    new DefaultMergeableOperation('ab'),
+                ],
+                'operationsToMerge' => [
+                    new DefaultMergeableOperation('a'),
+                    new DefaultMergeableOperation('b'),
+                ],
+                'consolidationMode' => $unlimitedMode,
+            ],
+        ];
     }
 
 
@@ -107,8 +213,27 @@ class OperationConsolidatorTest extends TestCase
     }
 
 
-//    private function assertExpectedOperations(array $expectedOperations, array $actualOperations): bool
-//    {
-//
-//    }
+    private function createAnotherMergeableOperation(string $text): MergeableOperation
+    {
+        return new class($text) implements MergeableOperation {
+            public function __construct(
+                public readonly string $text
+            ) {
+            }
+
+
+            public function canBeMergedWith(Operation $nextOperation): bool
+            {
+                return $nextOperation instanceof self;
+            }
+
+
+            public function mergeWith(Operation $nextOperation): MergeableOperation
+            {
+                assert($nextOperation instanceof self);
+
+                return new self($this->text . $nextOperation->text);
+            }
+        };
+    }
 }

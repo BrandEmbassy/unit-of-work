@@ -23,11 +23,10 @@ class OperationConsolidator
     ): array {
         if ($operationConsolidationMode->isDryRunUnlimitedConsolidation()) {
             if ($operationConsolidationMode->isUnlimitedConsolidation()) {
-                return $this->consolidateTheNewWay($operations);
+                return $this->consolidateNew($operations);
             }
 
-            // So that the merging process is just logged without any changes to actual data returned from Consolidator.
-            $this->consolidateTheNewWay($operations);
+            $this->consolidateNew($operations);
         }
 
         return $this->consolidateOld($operations);
@@ -41,13 +40,18 @@ class OperationConsolidator
      *
      * @return Operation[]
      */
-    private function consolidateTheNewWay(array $operations): array
+    private function consolidateNew(array $operations): array
     {
         if ($operations === []) {
             return [];
         }
 
         $operationsCount = count($operations);
+
+        if ($operationsCount === 1) {
+            return $operations;
+        }
+
         $mergeOperationIndex = 0;
         $consolidatedOperations = [];
 
