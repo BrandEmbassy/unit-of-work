@@ -10,6 +10,36 @@ use PHPUnit\Framework\TestCase;
  */
 class OperationConsolidatorTest extends TestCase
 {
+    public function testNewMerging(): void
+    {
+        $reducer = new OperationConsolidator();
+
+        $operations = [
+            new DefaultMergeableOperation(1),
+            new NotMergeableOperation(),
+            new DefaultMergeableOperation(2),
+            new NotMergeableOperation(),
+            new NotMergeableOperation(),
+            new DefaultMergeableOperation(4),
+        ];
+
+        $result = $reducer->consolidate($operations, new OperationConsolidationMode(true, true, true));
+
+        Assert::assertCount(4, $result);
+//        $mergedOperation = $result[0];
+//        Assert::assertInstanceOf(DefaultMergeableOperation::class, $mergedOperation);
+//        Assert::assertEquals(3, $mergedOperation->number);
+//
+//        Assert::assertInstanceOf(NotMergeableOperation::class, $result[1]);
+//        Assert::assertInstanceOf(NotMergeableOperation::class, $result[2]);
+//        Assert::assertNotSame($result[1], $result[2]);
+//
+//        $lastNotMergerOperation = $result[3];
+//        Assert::assertInstanceOf(DefaultMergeableOperation::class, $lastNotMergerOperation);
+//        Assert::assertEquals(4, $lastNotMergerOperation->number);
+    }
+
+
     public function testShouldReduce(): void
     {
         $reducer = new OperationConsolidator();

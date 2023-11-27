@@ -22,10 +22,67 @@ class OperationConsolidator
         OperationConsolidationMode $operationConsolidationMode
     ): array {
         if ($operationConsolidationMode->isDryRunUnlimitedConsolidation()) {
-            return $this->consolidateOld($operations);
+            if ($operationConsolidationMode->isUnlimitedConsolidation()) {
+                return $this->consolidateTheNewWay($operations);
+            }
+
+            // So that the merging process is just logged without any changes to actual data returned from Consolidator.
+            $this->consolidateTheNewWay($operations);
         }
 
         return $this->consolidateOld($operations);
+    }
+
+
+    /**
+     * This is the new way of merging.
+     *
+     * @param Operation[] $operations
+     *
+     * @return Operation[]
+     */
+    private function consolidateTheNewWay(array $operations): array
+    {
+        if ($operations === []) {
+            return [];
+        }
+
+        $operationsCount = count($operations);
+        $consolidatedOperations = [];
+
+        foreach ($operations as $index => $operation) {
+            if ($operation === null) {
+                continue;
+            }
+
+            $mergeOperationIndex = $index;
+            if (!$operation instanceof MergeableOperation) {
+                $consolidatedOperations[$mergeOperationIndex] = $operation;
+                continue;
+            }
+
+            $mergedOperation = $operation;
+
+            for ($i = $index + 1; $i < $operationsCount; $i++) {
+                $nextOperation = $operations[$i];
+                if (!$nextOperation instanceof MergeableOperation) {
+                    continue;
+                }
+
+                if ($mergedOperation->canBeMergedWith($nextOperation)) {
+                    $mergedOperation = $mergedOperation->mergeWith($nextOperation);
+                    $operations[$index] = null;
+                    $operations[$i] = null;
+                    $mergeOperationIndex = $i;
+                }
+            }
+
+            $consolidatedOperations[$mergeOperationIndex] = $mergedOperation;
+        }
+
+        ksort($consolidatedOperations);
+
+        return array_values($consolidatedOperations);
     }
 
 
