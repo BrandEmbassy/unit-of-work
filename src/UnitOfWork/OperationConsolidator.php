@@ -48,41 +48,61 @@ class OperationConsolidator
         }
 
         $operationsCount = count($operations);
+        $mergeOperationIndex = 0;
         $consolidatedOperations = [];
 
-        foreach ($operations as $index => $operation) {
-            if ($operation === null) {
-                continue;
-            }
-
-            $mergeOperationIndex = $index;
-            if (!$operation instanceof MergeableOperation) {
-                $consolidatedOperations[$mergeOperationIndex] = $operation;
-                continue;
-            }
-
-            $mergedOperation = $operation;
-
-            for ($i = $index + 1; $i < $operationsCount; $i++) {
-                $nextOperation = $operations[$i];
-                if (!$nextOperation instanceof MergeableOperation) {
-                    continue;
-                }
-
-                if ($mergedOperation->canBeMergedWith($nextOperation)) {
-                    $mergedOperation = $mergedOperation->mergeWith($nextOperation);
-                    $operations[$index] = null;
-                    $operations[$i] = null;
-                    $mergeOperationIndex = $i;
-                }
-            }
-
-            $consolidatedOperations[$mergeOperationIndex] = $mergedOperation;
-        }
+        $this->merge($consolidatedOperations, $operations, $operationsCount, $operations[$mergeOperationIndex], $mergeOperationIndex);
 
         ksort($consolidatedOperations);
 
         return array_values($consolidatedOperations);
+    }
+
+
+    private function merge(array &$consolidatedOperations, array &$operations, int $operationsCount, ?Operation $currentOperation, int $currentOperationIndex): void
+    {
+        $nextOperationIndex = $currentOperationIndex + 1;
+        if ($currentOperation === null) {
+            if ($nextOperationIndex === $operationsCount) {
+                return;
+            }
+            $this->merge($consolidatedOperations, $operations, $operationsCount, $operations[$nextOperationIndex], $nextOperationIndex);
+            return;
+        }
+
+        if (!$currentOperation instanceof MergeableOperation) {
+            $operations[$currentOperationIndex] = null;
+            $consolidatedOperations[$currentOperationIndex] = $currentOperation;
+            if ($nextOperationIndex === $operationsCount) {
+                return;
+            }
+            $this->merge($consolidatedOperations, $operations, $operationsCount, $operations[$nextOperationIndex], $nextOperationIndex);
+            return;
+        }
+
+        $mergedOperation = $currentOperation;
+        $operations[$currentOperationIndex] = null;
+        $lastMergedOperationIndex = $currentOperationIndex;
+
+        for ($i = $nextOperationIndex; $i < $operationsCount; $i++) {
+            $nextOperation = $operations[$i];
+            if (!$nextOperation instanceof MergeableOperation) {
+                continue;
+            }
+
+            if ($mergedOperation->canBeMergedWith($nextOperation)) {
+                $mergedOperation = $mergedOperation->mergeWith($nextOperation);
+                $operations[$i] = null;
+                $lastMergedOperationIndex = $i;
+            }
+        }
+
+        $consolidatedOperations[$lastMergedOperationIndex] = $mergedOperation;
+
+        if ($nextOperationIndex === $operationsCount) {
+            return;
+        }
+        $this->merge($consolidatedOperations, $operations, $operationsCount, $operations[$nextOperationIndex], $nextOperationIndex);
     }
 
 

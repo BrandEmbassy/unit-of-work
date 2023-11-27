@@ -25,18 +25,14 @@ class OperationConsolidatorTest extends TestCase
 
         $result = $reducer->consolidate($operations, new OperationConsolidationMode(true, true, true));
 
-        Assert::assertCount(4, $result);
-//        $mergedOperation = $result[0];
-//        Assert::assertInstanceOf(DefaultMergeableOperation::class, $mergedOperation);
-//        Assert::assertEquals(3, $mergedOperation->number);
-//
-//        Assert::assertInstanceOf(NotMergeableOperation::class, $result[1]);
-//        Assert::assertInstanceOf(NotMergeableOperation::class, $result[2]);
-//        Assert::assertNotSame($result[1], $result[2]);
-//
-//        $lastNotMergerOperation = $result[3];
-//        Assert::assertInstanceOf(DefaultMergeableOperation::class, $lastNotMergerOperation);
-//        Assert::assertEquals(4, $lastNotMergerOperation->number);
+        Assert::assertContainsOnlyInstancesOf(Operation::class, $result);
+        $expectedOperations = [
+            new NotMergeableOperation(),
+            new NotMergeableOperation(),
+            new NotMergeableOperation(),
+            new DefaultMergeableOperation(7),
+        ];
+        Assert::assertEquals($expectedOperations, $result);
     }
 
 
@@ -109,4 +105,10 @@ class OperationConsolidatorTest extends TestCase
             [[new DefaultMergeableOperation('aaa')]],
         ];
     }
+
+
+//    private function assertExpectedOperations(array $expectedOperations, array $actualOperations): bool
+//    {
+//
+//    }
 }
