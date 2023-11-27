@@ -13,9 +13,9 @@ class UnitOfWorkTest extends TestCase
     public function testShouldUnionUnitOfWork(): void
     {
         $unitOfWorkA = new UnitOfWork();
-        $unitOfWorkA->registerOperation(new DefaultMergeableOperation(1));
+        $unitOfWorkA->registerOperation(new DefaultMergeableOperation('a'));
         $unitOfWorkB = new UnitOfWork();
-        $unitOfWorkB->registerOperation(new DefaultMergeableOperation(2));
+        $unitOfWorkB->registerOperation(new DefaultMergeableOperation('b'));
 
         $result = $unitOfWorkA->concatenate($unitOfWorkB);
         $operations = $result->getOperations();
@@ -26,19 +26,19 @@ class UnitOfWorkTest extends TestCase
 
         /** @var DefaultMergeableOperation $first */
         $first = $operations[0];
-        Assert::assertEquals(1, $first->number);
+        Assert::assertEquals('a', $first->text);
 
         /** @var DefaultMergeableOperation $second */
         $second = $operations[1];
-        Assert::assertEquals(2, $second->number);
+        Assert::assertEquals('b', $second->text);
     }
 
 
     public function testShouldCreateUnitOfWorkFromOperations(): void
     {
         $operations = [
-            new DefaultMergeableOperation(1),
-            new DefaultMergeableOperation(2),
+            new DefaultMergeableOperation('a'),
+            new DefaultMergeableOperation('b'),
         ];
 
         $unitOfWork = UnitOfWork::fromOperations($operations);
@@ -48,7 +48,7 @@ class UnitOfWorkTest extends TestCase
 
     public function testShouldBeEmpty(): void
     {
-        $unitOfWorkNotEmpty = UnitOfWork::fromOperations([new DefaultMergeableOperation(1)]);
+        $unitOfWorkNotEmpty = UnitOfWork::fromOperations([new DefaultMergeableOperation('a')]);
         Assert::assertFalse($unitOfWorkNotEmpty->isEmpty());
 
         $unitOfWorkEmpty = UnitOfWork::fromOperations([]);

@@ -42,8 +42,8 @@ class UnitOfWorkReducerTest extends TestCase
      */
     public static function operationsToReduceProvider(): array
     {
-        $mergeableOperation1 = new DefaultMergeableOperation(1);
-        $mergeableOperation2 = new DefaultMergeableOperation(2);
+        $mergeableOperation1 = new DefaultMergeableOperation('a');
+        $mergeableOperation2 = new DefaultMergeableOperation('b');
 
         $notMergeableOperation1 = new NotMergeableOperation();
         $notMergeableOperation2 = new NotMergeableOperation();
@@ -52,37 +52,37 @@ class UnitOfWorkReducerTest extends TestCase
             [
                 [$notMergeableOperation1, $notMergeableOperation2],
                 [$mergeableOperation1, $notMergeableOperation1, $notMergeableOperation2],
-                new DefaultMergeableOperation(3),
+                new DefaultMergeableOperation('c'),
             ],
             [
                 [$notMergeableOperation1, $notMergeableOperation2],
                 [$mergeableOperation1, $mergeableOperation2, $notMergeableOperation1, $notMergeableOperation2],
-                new DefaultMergeableOperation(3),
+                new DefaultMergeableOperation('c'),
             ],
             [
                 [$notMergeableOperation1, $notMergeableOperation2],
                 [$notMergeableOperation1, $notMergeableOperation2],
-                new DefaultMergeableOperation(3),
+                new DefaultMergeableOperation('c'),
             ],
             [
                 [$notMergeableOperation1, $notMergeableOperation2, $mergeableOperation1],
                 [$notMergeableOperation1, $notMergeableOperation2, $mergeableOperation1],
-                new DefaultMergeableOperation(3),
+                new DefaultMergeableOperation('c'),
             ],
             [
                 [],
                 [$mergeableOperation1],
-                new DefaultMergeableOperation(3),
+                new DefaultMergeableOperation('c'),
             ],
             [
                 [],
                 [$mergeableOperation1, $mergeableOperation2],
-                new DefaultMergeableOperation(3),
+                new DefaultMergeableOperation('c'),
             ],
             [
                 [],
                 [],
-                new DefaultMergeableOperation(3),
+                new DefaultMergeableOperation('c'),
             ],
             [
                 [$notMergeableOperation1, $notMergeableOperation2, $mergeableOperation1],
