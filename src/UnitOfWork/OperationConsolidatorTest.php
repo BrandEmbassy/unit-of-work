@@ -27,7 +27,7 @@ class OperationConsolidatorTest extends TestCase
         Assert::assertCount(4, $result);
         $mergedOperation = $result[0];
         Assert::assertInstanceOf(DefaultMergeableOperation::class, $mergedOperation);
-        Assert::assertEquals('ab', $mergedOperation->text);
+        Assert::assertEquals('a+b', $mergedOperation->text);
 
         Assert::assertInstanceOf(NotMergeableOperation::class, $result[1]);
         Assert::assertInstanceOf(NotMergeableOperation::class, $result[2]);
@@ -53,7 +53,7 @@ class OperationConsolidatorTest extends TestCase
         Assert::assertCount(1, $result);
         $mergedOperation = $result[0];
         Assert::assertInstanceOf(DefaultMergeableOperation::class, $mergedOperation);
-        Assert::assertEquals('ab', $mergedOperation->text);
+        Assert::assertEquals('a+b', $mergedOperation->text);
     }
 
 

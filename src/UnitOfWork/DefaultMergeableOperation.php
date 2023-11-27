@@ -25,6 +25,6 @@ class DefaultMergeableOperation implements MergeableOperation
     {
         assert($nextOperation instanceof self);
 
-        return new self($this->text . $nextOperation->text);
+        return new self($this->text . '+' . $nextOperation->text);
     }
 }
