@@ -4,7 +4,6 @@ namespace BrandEmbassy\UnitOfWork;
 
 use function array_pop;
 use function array_reverse;
-use function array_shift;
 use function array_values;
 use function count;
 
@@ -47,11 +46,13 @@ class OperationConsolidator
             return [];
         }
 
-        $consolidatedOperations = [array_shift($operations)];
+        $consolidatedOperations = [array_pop($operations)];
 
         if ($operations === []) {
             return $consolidatedOperations;
         }
+
+        $operations = array_reverse($operations);
 
         foreach ($operations as $operation) {
             if (!($operation instanceof MergeableOperation)) {
