@@ -61,11 +61,21 @@ class OperationConsolidator
             }
 
             $updatedConsolidatedOperations = [];
+            $hasBeenMerged = false;
 
             foreach ($consolidatedOperations as $consolidatedOperation) {
-                $updatedConsolidatedOperations[] = $consolidatedOperation instanceof MergeableOperation && $consolidatedOperation->canBeMergedWith($operation)
-                    ? $consolidatedOperation->mergeWith($operation)
-                    : $consolidatedOperation;
+                if ($consolidatedOperation instanceof MergeableOperation && $consolidatedOperation->canBeMergedWith($operation)) {
+                    $updatedConsolidatedOperations[] = $consolidatedOperation->mergeWith($operation);
+                    $hasBeenMerged = true;
+
+                    continue;
+                }
+
+                $updatedConsolidatedOperations[] = $consolidatedOperation;
+            }
+
+            if (!$hasBeenMerged) {
+                $updatedConsolidatedOperations[] = $operation;
             }
 
             $consolidatedOperations = $updatedConsolidatedOperations;
