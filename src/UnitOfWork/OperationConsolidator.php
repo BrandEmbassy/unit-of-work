@@ -66,7 +66,7 @@ class OperationConsolidator
 
             foreach ($consolidatedOperations as $consolidatedOperation) {
                 if ($consolidatedOperation instanceof MergeableOperation && $consolidatedOperation->canBeMergedWith($operation)) {
-                    $updatedConsolidatedOperations[] = $consolidatedOperation->mergeWith($operation);
+                    $updatedConsolidatedOperations[] = $operation->mergeWith($consolidatedOperation);
                     $hasBeenMerged = true;
 
                     continue;
@@ -82,7 +82,7 @@ class OperationConsolidator
             $consolidatedOperations = $updatedConsolidatedOperations;
         }
 
-        return $consolidatedOperations;
+        return array_reverse($consolidatedOperations);
     }
 
 
