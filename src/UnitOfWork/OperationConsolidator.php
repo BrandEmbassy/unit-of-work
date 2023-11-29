@@ -46,12 +46,21 @@ class OperationConsolidator
             return [];
         }
 
-        $consolidatedOperations = [];
-        $operations = array_reverse($operations);
+        $initialOperationsState = [];
+        foreach ($operations as $key => $item) {
+            $initialOperationsState[] = sprintf('(%s) %s', $key, basename(str_replace('\\', '/', $item::class)));
+        }
+        $logMessage = sprintf('UoW Operations [%s] got merged into ', implode(', ', $initialOperationsState));
 
-        foreach ($operations as $operation) {
+        $mergedOperationsLogList = [];
+
+        $consolidatedOperations = [];
+        $operations = array_reverse($operations, true);
+
+        foreach ($operations as $operationIndex => $operation) {
             if (!$operation instanceof MergeableOperation) {
                 $consolidatedOperations[] = $operation;
+                $mergedOperationsLogList[$operationIndex] = [];
 
                 continue;
             }
@@ -59,27 +68,44 @@ class OperationConsolidator
             $updatedConsolidatedOperations = [];
             $hasBeenMerged = false;
 
-            foreach ($consolidatedOperations as $consolidatedOperation) {
+            foreach ($consolidatedOperations as $consolidatedOperationIndex => $consolidatedOperation) {
                 if ($consolidatedOperation instanceof MergeableOperation
-                    && $consolidatedOperation->canBeMergedWith($operation)
+                    && $operation->canBeMergedWith($consolidatedOperation)
                 ) {
                     $updatedConsolidatedOperations[] = $operation->mergeWith($consolidatedOperation);
+                    $mergedOperationsLogList[$consolidatedOperationIndex][] = $operationIndex;
                     $hasBeenMerged = true;
 
                     continue;
                 }
 
                 $updatedConsolidatedOperations[] = $consolidatedOperation;
+                $mergedOperationsLogList[$consolidatedOperationIndex] = [];
             }
 
             if (!$hasBeenMerged) {
                 $updatedConsolidatedOperations[] = $operation;
+                $mergedOperationsLogList[$operationIndex] = [];
             }
 
             $consolidatedOperations = $updatedConsolidatedOperations;
         }
 
-        return array_reverse($consolidatedOperations);
+        $consolidatedOperations = array_reverse($consolidatedOperations);
+
+        $mergedOperationsLogMessage = [];
+        ksort($mergedOperationsLogList);
+        foreach ($mergedOperationsLogList as $initialOperationIndex => $mergedOperationIndexList) {
+            $baseOperationClassName = basename(str_replace('\\', '/', $operations[$initialOperationIndex]::class));
+            $mergedOperations = [$initialOperationIndex];
+            foreach ($mergedOperationIndexList as $mergedOperationIndex) {
+                $mergedOperations[] = $mergedOperationIndex;
+            }
+            $mergedOperationsLogMessage[] = sprintf('(%s) %s', implode(', ', array_reverse($mergedOperations)), $baseOperationClassName);
+        }
+        $logMessage .= sprintf('[%s]', implode(', ', $mergedOperationsLogMessage));
+
+        return $consolidatedOperations;
     }
 
 
