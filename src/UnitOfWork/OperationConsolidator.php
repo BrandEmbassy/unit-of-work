@@ -22,10 +22,64 @@ class OperationConsolidator
         OperationConsolidationMode $operationConsolidationMode
     ): array {
         if ($operationConsolidationMode->isDryRunUnlimitedConsolidation()) {
-            return $this->consolidateOld($operations);
+            if ($operationConsolidationMode->isUnlimitedConsolidation()) {
+                return $this->consolidateNew($operations);
+            }
+
+            $this->consolidateNew($operations);
         }
 
         return $this->consolidateOld($operations);
+    }
+
+
+    /**
+     * This is the new way of merging.
+     *
+     * @param Operation[] $operations
+     *
+     * @return Operation[]
+     */
+    private function consolidateNew(array $operations): array
+    {
+        if ($operations === []) {
+            return [];
+        }
+
+        $consolidatedOperations = [];
+        $operations = array_reverse($operations);
+
+        foreach ($operations as $operation) {
+            if (!$operation instanceof MergeableOperation) {
+                $consolidatedOperations[] = $operation;
+
+                continue;
+            }
+
+            $updatedConsolidatedOperations = [];
+            $hasBeenMerged = false;
+
+            foreach ($consolidatedOperations as $consolidatedOperation) {
+                if ($consolidatedOperation instanceof MergeableOperation
+                    && $consolidatedOperation->canBeMergedWith($operation)
+                ) {
+                    $updatedConsolidatedOperations[] = $operation->mergeWith($consolidatedOperation);
+                    $hasBeenMerged = true;
+
+                    continue;
+                }
+
+                $updatedConsolidatedOperations[] = $consolidatedOperation;
+            }
+
+            if (!$hasBeenMerged) {
+                $updatedConsolidatedOperations[] = $operation;
+            }
+
+            $consolidatedOperations = $updatedConsolidatedOperations;
+        }
+
+        return array_reverse($consolidatedOperations);
     }
 
 
