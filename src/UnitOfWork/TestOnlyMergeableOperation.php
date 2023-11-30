@@ -7,7 +7,7 @@ use function assert;
 /**
  * @final
  */
-class AnotherDefaultMergeableOperation implements MergeableOperation
+class TestOnlyMergeableOperation implements MergeableOperation
 {
     public function __construct(
         public readonly string $text
