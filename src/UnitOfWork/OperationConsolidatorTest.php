@@ -41,104 +41,104 @@ class OperationConsolidatorTest extends TestCase
         $neighboursOnlyMode = new OperationConsolidationMode(false, false, false);
 
         return [
-//            'New merging dry run. Expected only neighbouring operations to merge' => [
-//                'expectedOperations' => [
-//                    new DefaultMergeableOperation('a'),
-//                    new NotMergeableOperation(),
-//                    new DefaultMergeableOperation('b+c'),
-//                    new NotMergeableOperation(),
-//                    new NotMergeableOperation(),
-//                    new DefaultMergeableOperation('d'),
-//                ],
-//                'operationsToMerge' => [
-//                    new DefaultMergeableOperation('a'),
-//                    new NotMergeableOperation(),
-//                    new DefaultMergeableOperation('b'),
-//                    new DefaultMergeableOperation('c'),
-//                    new NotMergeableOperation(),
-//                    new NotMergeableOperation(),
-//                    new DefaultMergeableOperation('d'),
-//                ],
-//                'consolidationMode' => $dryRunUnlimitedMode,
-//            ],
+            'New merging dry run. Expected only neighbouring operations to merge' => [
+                'expectedOperations' => [
+                    new DefaultMergeableOperation('a'),
+                    new NotMergeableOperation(),
+                    new DefaultMergeableOperation('b+c'),
+                    new NotMergeableOperation(),
+                    new NotMergeableOperation(),
+                    new DefaultMergeableOperation('d'),
+                ],
+                'operationsToMerge' => [
+                    new DefaultMergeableOperation('a'),
+                    new NotMergeableOperation(),
+                    new DefaultMergeableOperation('b'),
+                    new DefaultMergeableOperation('c'),
+                    new NotMergeableOperation(),
+                    new NotMergeableOperation(),
+                    new DefaultMergeableOperation('d'),
+                ],
+                'consolidationMode' => $dryRunUnlimitedMode,
+            ],
             'New merging enabled. All mergeable operations are merged' => [
                 'expectedOperations' => [
                     new NotMergeableOperation(),
                     new NotMergeableOperation(),
                     new NotMergeableOperation(),
                     new DefaultMergeableOperation('a+b+c+d'),
-                    new AnotherDefaultMergeableOperation('a+b+c'),
+                    $this->createAnotherMergeableOperation('a+b+c'),
                 ],
                 'operationsToMerge' => [
                     new DefaultMergeableOperation('a'),
                     new NotMergeableOperation(),
-                    new AnotherDefaultMergeableOperation('a'),
+                    $this->createAnotherMergeableOperation('a'),
                     new DefaultMergeableOperation('b'),
-                    new AnotherDefaultMergeableOperation('b'),
+                    $this->createAnotherMergeableOperation('b'),
                     new DefaultMergeableOperation('c'),
                     new NotMergeableOperation(),
                     new NotMergeableOperation(),
                     new DefaultMergeableOperation('d'),
-                    new AnotherDefaultMergeableOperation('c'),
+                    $this->createAnotherMergeableOperation('c'),
                 ],
                 'consolidationMode' => $unlimitedMode,
             ],
-//            'New merging disabled' => [
-//                'expectedOperations' => [
-//                    new DefaultMergeableOperation('a'),
-//                    new NotMergeableOperation(),
-//                    new DefaultMergeableOperation('b+c'),
-//                    new NotMergeableOperation(),
-//                    new NotMergeableOperation(),
-//                    new DefaultMergeableOperation('d'),
-//                ],
-//                'operationsToMerge' => [
-//                    new DefaultMergeableOperation('a'),
-//                    new NotMergeableOperation(),
-//                    new DefaultMergeableOperation('b'),
-//                    new DefaultMergeableOperation('c'),
-//                    new NotMergeableOperation(),
-//                    new NotMergeableOperation(),
-//                    new DefaultMergeableOperation('d'),
-//                ],
-//                'consolidationMode' => $neighboursOnlyMode,
-//            ],
-//
-//            'No operations to merge' => [
-//                'expectedOperations' => [],
-//                'operationsToMerge' => [],
-//                'consolidationMode' => $unlimitedMode,
-//            ],
-//            'No mergeable operations to merge' => [
-//                'expectedOperations' => [
-//                    new NotMergeableOperation(),
-//                    new NotMergeableOperation(),
-//                ],
-//                'operationsToMerge' => [
-//                    new NotMergeableOperation(),
-//                    new NotMergeableOperation(),
-//                ],
-//                'consolidationMode' => $unlimitedMode,
-//            ],
-//            'One mergeable operation to merge' => [
-//                'expectedOperations' => [
-//                    new DefaultMergeableOperation('a'),
-//                ],
-//                'operationsToMerge' => [
-//                    new DefaultMergeableOperation('a'),
-//                ],
-//                'consolidationMode' => $unlimitedMode,
-//            ],
-//            'Two mergeable operations to merge' => [
-//                'expectedOperations' => [
-//                    new DefaultMergeableOperation('a+b'),
-//                ],
-//                'operationsToMerge' => [
-//                    new DefaultMergeableOperation('a'),
-//                    new DefaultMergeableOperation('b'),
-//                ],
-//                'consolidationMode' => $unlimitedMode,
-//            ],
+            'New merging disabled' => [
+                'expectedOperations' => [
+                    new DefaultMergeableOperation('a'),
+                    new NotMergeableOperation(),
+                    new DefaultMergeableOperation('b+c'),
+                    new NotMergeableOperation(),
+                    new NotMergeableOperation(),
+                    new DefaultMergeableOperation('d'),
+                ],
+                'operationsToMerge' => [
+                    new DefaultMergeableOperation('a'),
+                    new NotMergeableOperation(),
+                    new DefaultMergeableOperation('b'),
+                    new DefaultMergeableOperation('c'),
+                    new NotMergeableOperation(),
+                    new NotMergeableOperation(),
+                    new DefaultMergeableOperation('d'),
+                ],
+                'consolidationMode' => $neighboursOnlyMode,
+            ],
+
+            'No operations to merge' => [
+                'expectedOperations' => [],
+                'operationsToMerge' => [],
+                'consolidationMode' => $unlimitedMode,
+            ],
+            'No mergeable operations to merge' => [
+                'expectedOperations' => [
+                    new NotMergeableOperation(),
+                    new NotMergeableOperation(),
+                ],
+                'operationsToMerge' => [
+                    new NotMergeableOperation(),
+                    new NotMergeableOperation(),
+                ],
+                'consolidationMode' => $unlimitedMode,
+            ],
+            'One mergeable operation to merge' => [
+                'expectedOperations' => [
+                    new DefaultMergeableOperation('a'),
+                ],
+                'operationsToMerge' => [
+                    new DefaultMergeableOperation('a'),
+                ],
+                'consolidationMode' => $unlimitedMode,
+            ],
+            'Two mergeable operations to merge' => [
+                'expectedOperations' => [
+                    new DefaultMergeableOperation('a+b'),
+                ],
+                'operationsToMerge' => [
+                    new DefaultMergeableOperation('a'),
+                    new DefaultMergeableOperation('b'),
+                ],
+                'consolidationMode' => $unlimitedMode,
+            ],
         ];
     }
 
