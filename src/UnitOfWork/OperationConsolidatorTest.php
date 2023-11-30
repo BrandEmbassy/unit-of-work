@@ -4,7 +4,7 @@ namespace BrandEmbassy\UnitOfWork;
 
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
-use function assert;
+use Psr\Log\Test\TestLogger;
 
 /**
  * @final
@@ -18,16 +18,21 @@ class OperationConsolidatorTest extends TestCase
      * @param array<int, Operation> $operationsToMerge
      */
     public function testNewMerging(
+        ?string $expectedLogMessage,
         array $expectedOperations,
         array $operationsToMerge,
         OperationConsolidationMode $consolidationMode
     ): void {
-        $reducer = new OperationConsolidator();
+        $logger = new TestLogger();
+        $reducer = new OperationConsolidator($logger);
 
         $result = $reducer->consolidate($operationsToMerge, $consolidationMode);
 
         Assert::assertContainsOnlyInstancesOf(Operation::class, $result);
         Assert::assertEquals($expectedOperations, $result);
+        if ($expectedLogMessage !== null) {
+            Assert::assertTrue($logger->hasDebugThatContains($expectedLogMessage));
+        }
     }
 
 
@@ -36,12 +41,13 @@ class OperationConsolidatorTest extends TestCase
      */
     public function operationsDataProvider(): array
     {
-        $dryRunUnlimitedMode = new OperationConsolidationMode(false, true, false);
-        $unlimitedMode = new OperationConsolidationMode(false, true, true);
+        $dryRunUnlimitedMode = new OperationConsolidationMode(true, true, false);
+        $unlimitedMode = new OperationConsolidationMode(true, true, true);
         $neighboursOnlyMode = new OperationConsolidationMode(false, false, false);
 
         return [
             'New merging dry run. Expected only neighbouring operations to merge' => [
+                'expectedLogMessage' => 'UoW Operations [(0) DefaultMergeableOperation, (1) NotMergeableOperation, (2) DefaultMergeableOperation, (3) DefaultMergeableOperation, (4) NotMergeableOperation, (5) NotMergeableOperation, (6) DefaultMergeableOperation] got merged into [(1) NotMergeableOperation, (4) NotMergeableOperation, (5) NotMergeableOperation, (0, 2, 3, 6) DefaultMergeableOperation]',
                 'expectedOperations' => [
                     new DefaultMergeableOperation('a'),
                     new NotMergeableOperation(),
@@ -62,28 +68,30 @@ class OperationConsolidatorTest extends TestCase
                 'consolidationMode' => $dryRunUnlimitedMode,
             ],
             'New merging enabled. All mergeable operations are merged' => [
+                'expectedLogMessage' => 'UoW Operations [(0) DefaultMergeableOperation, (1) NotMergeableOperation, (2) AnotherDefaultMergeableOperation, (3) DefaultMergeableOperation, (4) AnotherDefaultMergeableOperation, (5) DefaultMergeableOperation, (6) NotMergeableOperation, (7) NotMergeableOperation, (8) DefaultMergeableOperation, (9) AnotherDefaultMergeableOperation] got merged into [(1) NotMergeableOperation, (6) NotMergeableOperation, (7) NotMergeableOperation, (0, 3, 5, 8) DefaultMergeableOperation, (2, 4, 9) AnotherDefaultMergeableOperation]',
                 'expectedOperations' => [
                     new NotMergeableOperation(),
                     new NotMergeableOperation(),
                     new NotMergeableOperation(),
                     new DefaultMergeableOperation('a+b+c+d'),
-                    $this->createAnotherMergeableOperation('a+b+c'),
+                    new AnotherDefaultMergeableOperation('a+b+c'),
                 ],
                 'operationsToMerge' => [
                     new DefaultMergeableOperation('a'),
                     new NotMergeableOperation(),
-                    $this->createAnotherMergeableOperation('a'),
+                    new AnotherDefaultMergeableOperation('a'),
                     new DefaultMergeableOperation('b'),
-                    $this->createAnotherMergeableOperation('b'),
+                    new AnotherDefaultMergeableOperation('b'),
                     new DefaultMergeableOperation('c'),
                     new NotMergeableOperation(),
                     new NotMergeableOperation(),
                     new DefaultMergeableOperation('d'),
-                    $this->createAnotherMergeableOperation('c'),
+                    new AnotherDefaultMergeableOperation('c'),
                 ],
                 'consolidationMode' => $unlimitedMode,
             ],
             'New merging disabled' => [
+                'expectedLogMessage' => null,
                 'expectedOperations' => [
                     new DefaultMergeableOperation('a'),
                     new NotMergeableOperation(),
@@ -105,11 +113,13 @@ class OperationConsolidatorTest extends TestCase
             ],
 
             'No operations to merge' => [
+                'expectedLogMessage' => null,
                 'expectedOperations' => [],
                 'operationsToMerge' => [],
                 'consolidationMode' => $unlimitedMode,
             ],
             'No mergeable operations to merge' => [
+                'expectedLogMessage' => 'UoW Operations [(0) NotMergeableOperation, (1) NotMergeableOperation] got merged into [(0) NotMergeableOperation, (1) NotMergeableOperation]',
                 'expectedOperations' => [
                     new NotMergeableOperation(),
                     new NotMergeableOperation(),
@@ -121,6 +131,7 @@ class OperationConsolidatorTest extends TestCase
                 'consolidationMode' => $unlimitedMode,
             ],
             'One mergeable operation to merge' => [
+                'expectedLogMessage' => null,
                 'expectedOperations' => [
                     new DefaultMergeableOperation('a'),
                 ],
@@ -130,6 +141,7 @@ class OperationConsolidatorTest extends TestCase
                 'consolidationMode' => $unlimitedMode,
             ],
             'Two mergeable operations to merge' => [
+                'expectedLogMessage' => 'UoW Operations [(0) DefaultMergeableOperation, (1) DefaultMergeableOperation] got merged into [(0, 1) DefaultMergeableOperation]',
                 'expectedOperations' => [
                     new DefaultMergeableOperation('a+b'),
                 ],
@@ -145,7 +157,7 @@ class OperationConsolidatorTest extends TestCase
 
     public function testShouldReduce(): void
     {
-        $reducer = new OperationConsolidator();
+        $reducer = new OperationConsolidator(new TestLogger());
 
         $operations = [
             new DefaultMergeableOperation('a'),
@@ -174,7 +186,7 @@ class OperationConsolidatorTest extends TestCase
 
     public function testShouldMergeLastTwo(): void
     {
-        $reducer = new OperationConsolidator();
+        $reducer = new OperationConsolidator(new TestLogger());
 
         $operations = [
             new DefaultMergeableOperation('a'),
@@ -197,7 +209,7 @@ class OperationConsolidatorTest extends TestCase
      */
     public function testShouldReduceTrivial(array $data): void
     {
-        $reducer = new OperationConsolidator();
+        $reducer = new OperationConsolidator(new TestLogger());
         Assert::assertEquals($data, $reducer->consolidate($data, new OperationConsolidationMode()));
     }
 
@@ -211,30 +223,5 @@ class OperationConsolidatorTest extends TestCase
             [[]],
             [[new DefaultMergeableOperation('a+a+a')]],
         ];
-    }
-
-
-    private function createAnotherMergeableOperation(string $text): MergeableOperation
-    {
-        return new class($text) implements MergeableOperation {
-            public function __construct(
-                public readonly string $text
-            ) {
-            }
-
-
-            public function canBeMergedWith(Operation $nextOperation): bool
-            {
-                return $nextOperation instanceof self;
-            }
-
-
-            public function mergeWith(Operation $nextOperation): MergeableOperation
-            {
-                assert($nextOperation instanceof self);
-
-                return new self($this->text . '+' . $nextOperation->text);
-            }
-        };
     }
 }
