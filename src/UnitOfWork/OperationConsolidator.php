@@ -46,40 +46,61 @@ class OperationConsolidator
             return [];
         }
 
+        $operationsCount = count($operations);
+
+        if ($operationsCount === 1) {
+            return $operations;
+        }
+
+        $consolidatedOperations = $this->getConsolidatedOperations($operations, $operationsCount);
+
+        ksort($consolidatedOperations);
+
+        return array_values($consolidatedOperations);
+    }
+
+
+    /**
+     * @param Operation[] $operations
+     *
+     * @return Operation[]
+     */
+    private function getConsolidatedOperations(array $operations, int $operationsCount): array
+    {
         $consolidatedOperations = [];
-        $operations = array_reverse($operations);
 
-        foreach ($operations as $operation) {
-            if (!$operation instanceof MergeableOperation) {
-                $consolidatedOperations[] = $operation;
+        for ($currentOperationIndex = 0; $currentOperationIndex < $operationsCount; $currentOperationIndex++) {
+            $currentOperation = $operations[$currentOperationIndex];
 
+            if ($currentOperation === null) {
                 continue;
             }
 
-            $updatedConsolidatedOperations = [];
-            $hasBeenMerged = false;
+            if (!$currentOperation instanceof MergeableOperation) {
+                $consolidatedOperations[$currentOperationIndex] = $currentOperation;
+                continue;
+            }
 
-            foreach ($consolidatedOperations as $consolidatedOperation) {
-                if ($consolidatedOperation instanceof MergeableOperation
-                    && $consolidatedOperation->canBeMergedWith($operation)
-                ) {
-                    $updatedConsolidatedOperations[] = $operation->mergeWith($consolidatedOperation);
-                    $hasBeenMerged = true;
+            $mergedOperation = $currentOperation;
+            $lastMergedOperationIndex = $currentOperationIndex;
 
+            for ($nextOperationIndex = $currentOperationIndex + 1; $nextOperationIndex < $operationsCount; $nextOperationIndex++) {
+                $nextOperation = $operations[$nextOperationIndex];
+                if (!$nextOperation instanceof MergeableOperation) {
                     continue;
                 }
 
-                $updatedConsolidatedOperations[] = $consolidatedOperation;
+                if ($currentOperation->canBeMergedWith($nextOperation)) {
+                    $mergedOperation = $mergedOperation->mergeWith($nextOperation);
+                    $operations[$nextOperationIndex] = null;
+                    $lastMergedOperationIndex = $nextOperationIndex;
+                }
             }
 
-            if (!$hasBeenMerged) {
-                $updatedConsolidatedOperations[] = $operation;
-            }
-
-            $consolidatedOperations = $updatedConsolidatedOperations;
+            $consolidatedOperations[$lastMergedOperationIndex] = $mergedOperation;
         }
 
-        return array_reverse($consolidatedOperations);
+        return $consolidatedOperations;
     }
 
 
