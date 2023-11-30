@@ -2,27 +2,19 @@
 
 namespace BrandEmbassy\UnitOfWork;
 
-use Psr\Log\LoggerInterface;
 use function array_pop;
 use function array_reverse;
 use function array_values;
-use function basename;
 use function count;
-use function implode;
 use function ksort;
-use function sprintf;
-use function str_replace;
 
 /**
  * @final
  */
 class OperationConsolidator
 {
-    private const LOG_MESSAGE_OPERATIONS_SEPARATOR = ', ';
-
-
     public function __construct(
-        private readonly LoggerInterface $logger
+        private readonly OperationConsolidatorResultLogger $operationConsolidatorResultLogger
     ) {
     }
 
@@ -68,20 +60,20 @@ class OperationConsolidator
             return $operations;
         }
 
-        $consolidatedOperations = $this->getConsolidatedOperations($operations, $operationsCount, $isLoggingEnabled);
+        $operationConsolidationResult = $this->getConsolidatedOperations($operations, $operationsCount);
 
-        ksort($consolidatedOperations);
+        if ($isLoggingEnabled) {
+            $this->operationConsolidatorResultLogger->log($operationConsolidationResult);
+        }
 
-        return array_values($consolidatedOperations);
+        return $operationConsolidationResult->getConsolidatedOperations();
     }
 
 
     /**
      * @param Operation[] $operations
-     *
-     * @return Operation[]
      */
-    private function getConsolidatedOperations(array $operations, int $operationsCount, bool $isLoggingEnabled): array
+    private function getConsolidatedOperations(array $operations, int $operationsCount): OperationConsolidationResult
     {
         $initialOperations = $operations;
         $consolidatedOperationsState = [];
@@ -124,11 +116,15 @@ class OperationConsolidator
             $consolidatedOperations[$lastMergedOperationIndex] = $mergedOperation;
         }
 
-        if ($isLoggingEnabled) {
-            $this->logConsolidationResult($initialOperations, $consolidatedOperationsState);
-        }
+        ksort($consolidatedOperations);
+        ksort($consolidatedOperationsState);
+        $consolidatedOperations = array_values($consolidatedOperations);
 
-        return $consolidatedOperations;
+        return new OperationConsolidationResult(
+            $initialOperations,
+            $consolidatedOperations,
+            $consolidatedOperationsState,
+        );
     }
 
 
@@ -166,42 +162,5 @@ class OperationConsolidator
         }
 
         return $merged;
-    }
-
-
-    /**
-     * @param Operation[] $initialOperations
-     * @param array<int, array<int, mixed>> $consolidatedOperationsState
-     */
-    private function logConsolidationResult(array $initialOperations, array $consolidatedOperationsState): void
-    {
-        $initialOperationsState = [];
-        foreach ($initialOperations as $key => $operation) {
-            $initialOperationsState[] = sprintf('(%s) %s', $key, $this->getClassNameBase($operation::class));
-        }
-
-        $logMessageParts = [];
-        ksort($consolidatedOperationsState);
-        foreach ($consolidatedOperationsState as $initialOperationIndex => $consolidatedOperationsStateItem) {
-            $operationClassNameBase = $this->getClassNameBase($initialOperations[$initialOperationIndex]::class);
-            $logMessageParts[] = sprintf(
-                '(%s) %s',
-                implode(self::LOG_MESSAGE_OPERATIONS_SEPARATOR, array_values($consolidatedOperationsStateItem)),
-                $operationClassNameBase,
-            );
-        }
-        $logMessage = sprintf(
-            'UoW Operations [%s] got merged into [%s]',
-            implode(self::LOG_MESSAGE_OPERATIONS_SEPARATOR, $initialOperationsState),
-            implode(self::LOG_MESSAGE_OPERATIONS_SEPARATOR, $logMessageParts),
-        );
-
-        $this->logger->debug($logMessage);
-    }
-
-
-    private function getClassNameBase(string $className): string
-    {
-        return basename(str_replace('\\', '/', $className));
     }
 }
