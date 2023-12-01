@@ -3,16 +3,18 @@
 namespace BrandEmbassy\UnitOfWork;
 
 use Psr\Log\LoggerInterface;
+use function array_values;
 use function basename;
+use function count;
 use function implode;
+use function ksort;
 use function sprintf;
 use function str_replace;
-
 
 /**
  * @final
  */
-class OperationConsolidatorResultLogger
+class OperationConsolidatorLogger
 {
     private const LOG_MESSAGE_OPERATIONS_SEPARATOR = ', ';
 
@@ -27,8 +29,20 @@ class OperationConsolidatorResultLogger
      * @param Operation[] $initialOperations
      * @param array<int, array<int, mixed>> $consolidatedOperationsState
      */
-    public function logConsolidationResult(array $initialOperations, array $consolidatedOperationsState): void
+    public function log(array $initialOperations, array $consolidatedOperationsState): void
     {
+        if ($initialOperations === []) {
+            return;
+        }
+
+        $operationsCount = count($initialOperations);
+
+        if ($operationsCount === 1) {
+            return;
+        }
+
+        ksort($consolidatedOperationsState);
+
         $initialOperationsState = [];
         foreach ($initialOperations as $key => $operation) {
             $initialOperationsState[] = sprintf('(%s) %s', $key, $this->getClassNameBase($operation::class));

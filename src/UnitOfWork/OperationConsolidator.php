@@ -14,7 +14,7 @@ use function ksort;
 class OperationConsolidator
 {
     public function __construct(
-        private readonly OperationConsolidatorResultLogger $operationConsolidatorResultLogger
+        private readonly OperationConsolidatorLogger $operationConsolidatorResultLogger
     ) {
     }
 
@@ -115,8 +115,7 @@ class OperationConsolidator
         ksort($consolidatedOperations);
 
         if ($isLoggingEnabled) {
-            ksort($consolidatedOperationsState);
-            $this->operationConsolidatorResultLogger->logConsolidationResult($initialOperations, $consolidatedOperationsState);
+            $this->operationConsolidatorResultLogger->log($initialOperations, $consolidatedOperationsState);
         }
 
         return array_values($consolidatedOperations);
