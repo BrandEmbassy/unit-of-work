@@ -2,27 +2,42 @@
 
 namespace BrandEmbassy\UnitOfWork;
 
+use Mockery;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use Mockery\MockInterface;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
-use function assert;
+use Psr\Log\NullLogger;
 
 /**
  * @final
  */
 class OperationConsolidatorTest extends TestCase
 {
+    use MockeryPHPUnitIntegration;
+
+
     /**
      * @dataProvider operationsDataProvider
      *
+     * @param array<int, array<int, int>> $expectedConsolidatedOperationsState
      * @param array<int, Operation> $expectedOperations
      * @param array<int, Operation> $operationsToMerge
      */
     public function testNewMerging(
+        bool $isExpectedToLog,
+        array $expectedConsolidatedOperationsState,
         array $expectedOperations,
         array $operationsToMerge,
         OperationConsolidationMode $consolidationMode
     ): void {
-        $reducer = new OperationConsolidator();
+        $operationConsolidatorResultLogger = $isExpectedToLog
+            ? $this->createOperationConsolidatorLoggerMock(
+                $operationsToMerge,
+                $expectedConsolidatedOperationsState,
+            )
+            : Mockery::mock(OperationConsolidatorLogger::class);
+        $reducer = new OperationConsolidator($operationConsolidatorResultLogger);
 
         $result = $reducer->consolidate($operationsToMerge, $consolidationMode);
 
@@ -36,12 +51,19 @@ class OperationConsolidatorTest extends TestCase
      */
     public function operationsDataProvider(): array
     {
-        $dryRunUnlimitedMode = new OperationConsolidationMode(false, true, false);
-        $unlimitedMode = new OperationConsolidationMode(false, true, true);
+        $dryRunUnlimitedMode = new OperationConsolidationMode(true, true, false);
+        $unlimitedMode = new OperationConsolidationMode(true, true, true);
         $neighboursOnlyMode = new OperationConsolidationMode(false, false, false);
 
         return [
             'New merging dry run. Expected only neighbouring operations to merge' => [
+                'isExpectedToLog' => true,
+                'expectedConsolidatedOperationsState' => [
+                    6 => [0, 2, 3, 6],
+                    1 => [1],
+                    4 => [4],
+                    5 => [5],
+                ],
                 'expectedOperations' => [
                     new DefaultMergeableOperation('a'),
                     new NotMergeableOperation(),
@@ -62,28 +84,38 @@ class OperationConsolidatorTest extends TestCase
                 'consolidationMode' => $dryRunUnlimitedMode,
             ],
             'New merging enabled. All mergeable operations are merged' => [
+                'isExpectedToLog' => true,
+                'expectedConsolidatedOperationsState' => [
+                    9 => [2, 4, 9],
+                    8 => [0, 3, 5, 8],
+                    7 => [7],
+                    6 => [6],
+                    1 => [1],
+                ],
                 'expectedOperations' => [
                     new NotMergeableOperation(),
                     new NotMergeableOperation(),
                     new NotMergeableOperation(),
                     new DefaultMergeableOperation('a+b+c+d'),
-                    $this->createAnotherMergeableOperation('a+b+c'),
+                    new TestOnlyMergeableOperation('a+b+c'),
                 ],
                 'operationsToMerge' => [
                     new DefaultMergeableOperation('a'),
                     new NotMergeableOperation(),
-                    $this->createAnotherMergeableOperation('a'),
+                    new TestOnlyMergeableOperation('a'),
                     new DefaultMergeableOperation('b'),
-                    $this->createAnotherMergeableOperation('b'),
+                    new TestOnlyMergeableOperation('b'),
                     new DefaultMergeableOperation('c'),
                     new NotMergeableOperation(),
                     new NotMergeableOperation(),
                     new DefaultMergeableOperation('d'),
-                    $this->createAnotherMergeableOperation('c'),
+                    new TestOnlyMergeableOperation('c'),
                 ],
                 'consolidationMode' => $unlimitedMode,
             ],
             'New merging disabled' => [
+                'isExpectedToLog' => false,
+                'expectedConsolidatedOperationsState' => [],
                 'expectedOperations' => [
                     new DefaultMergeableOperation('a'),
                     new NotMergeableOperation(),
@@ -105,11 +137,18 @@ class OperationConsolidatorTest extends TestCase
             ],
 
             'No operations to merge' => [
+                'isExpectedToLog' => false,
+                'expectedConsolidatedOperationsState' => [],
                 'expectedOperations' => [],
                 'operationsToMerge' => [],
                 'consolidationMode' => $unlimitedMode,
             ],
             'No mergeable operations to merge' => [
+                'isExpectedToLog' => true,
+                'expectedConsolidatedOperationsState' => [
+                    0 => [0],
+                    1 => [1],
+                ],
                 'expectedOperations' => [
                     new NotMergeableOperation(),
                     new NotMergeableOperation(),
@@ -121,6 +160,8 @@ class OperationConsolidatorTest extends TestCase
                 'consolidationMode' => $unlimitedMode,
             ],
             'One mergeable operation to merge' => [
+                'isExpectedToLog' => false,
+                'expectedConsolidatedOperationsState' => [],
                 'expectedOperations' => [
                     new DefaultMergeableOperation('a'),
                 ],
@@ -130,6 +171,10 @@ class OperationConsolidatorTest extends TestCase
                 'consolidationMode' => $unlimitedMode,
             ],
             'Two mergeable operations to merge' => [
+                'isExpectedToLog' => true,
+                'expectedConsolidatedOperationsState' => [
+                    1 => [0, 1],
+                ],
                 'expectedOperations' => [
                     new DefaultMergeableOperation('a+b'),
                 ],
@@ -145,7 +190,7 @@ class OperationConsolidatorTest extends TestCase
 
     public function testShouldReduce(): void
     {
-        $reducer = new OperationConsolidator();
+        $reducer = new OperationConsolidator(new OperationConsolidatorLogger(new NullLogger()));
 
         $operations = [
             new DefaultMergeableOperation('a'),
@@ -174,7 +219,7 @@ class OperationConsolidatorTest extends TestCase
 
     public function testShouldMergeLastTwo(): void
     {
-        $reducer = new OperationConsolidator();
+        $reducer = new OperationConsolidator(new OperationConsolidatorLogger(new NullLogger()));
 
         $operations = [
             new DefaultMergeableOperation('a'),
@@ -197,7 +242,7 @@ class OperationConsolidatorTest extends TestCase
      */
     public function testShouldReduceTrivial(array $data): void
     {
-        $reducer = new OperationConsolidator();
+        $reducer = new OperationConsolidator(new OperationConsolidatorLogger(new NullLogger()));
         Assert::assertEquals($data, $reducer->consolidate($data, new OperationConsolidationMode()));
     }
 
@@ -214,27 +259,20 @@ class OperationConsolidatorTest extends TestCase
     }
 
 
-    private function createAnotherMergeableOperation(string $text): MergeableOperation
-    {
-        return new class($text) implements MergeableOperation {
-            public function __construct(
-                public readonly string $text
-            ) {
-            }
+    /**
+     * @param Operation[] $initialOperations
+     * @param array<int, array<int, int>> $consolidatedOperationsState
+     *
+     * @return OperationConsolidatorLogger&MockInterface
+     */
+    private function createOperationConsolidatorLoggerMock(
+        array $initialOperations,
+        array $consolidatedOperationsState
+    ): OperationConsolidatorLogger {
+        $mock = Mockery::mock(OperationConsolidatorLogger::class);
+        $mock->expects('log')
+            ->with($initialOperations, $consolidatedOperationsState);
 
-
-            public function canBeMergedWith(Operation $nextOperation): bool
-            {
-                return $nextOperation instanceof self;
-            }
-
-
-            public function mergeWith(Operation $nextOperation): MergeableOperation
-            {
-                assert($nextOperation instanceof self);
-
-                return new self($this->text . '+' . $nextOperation->text);
-            }
-        };
+        return $mock;
     }
 }
