@@ -60,20 +60,16 @@ class OperationConsolidator
             return $operations;
         }
 
-        $operationConsolidationResult = $this->getConsolidatedOperations($operations, $operationsCount);
-
-        if ($isLoggingEnabled) {
-            $this->operationConsolidatorResultLogger->log($operationConsolidationResult);
-        }
-
-        return $operationConsolidationResult->getConsolidatedOperations();
+        return $this->getConsolidatedOperations($operations, $operationsCount, $isLoggingEnabled);
     }
 
 
     /**
      * @param Operation[] $operations
+     *
+     * @return Operation[]
      */
-    private function getConsolidatedOperations(array $operations, int $operationsCount): OperationConsolidationResult
+    private function getConsolidatedOperations(array $operations, int $operationsCount, bool $isLoggingEnabled): array
     {
         $initialOperations = $operations;
         $consolidatedOperationsState = [];
@@ -117,14 +113,13 @@ class OperationConsolidator
         }
 
         ksort($consolidatedOperations);
-        ksort($consolidatedOperationsState);
-        $consolidatedOperations = array_values($consolidatedOperations);
 
-        return new OperationConsolidationResult(
-            $initialOperations,
-            $consolidatedOperations,
-            $consolidatedOperationsState,
-        );
+        if ($isLoggingEnabled) {
+            ksort($consolidatedOperationsState);
+            $this->operationConsolidatorResultLogger->logConsolidationResult($initialOperations, $consolidatedOperationsState);
+        }
+
+        return array_values($consolidatedOperations);
     }
 
 

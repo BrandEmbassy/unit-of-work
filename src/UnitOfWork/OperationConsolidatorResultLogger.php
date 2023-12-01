@@ -23,16 +23,18 @@ class OperationConsolidatorResultLogger
     }
 
 
-    public function log(OperationConsolidationResult $operationConsolidationResult): void
+    /**
+     * @param Operation[] $initialOperations
+     * @param array<int, array<int, mixed>> $consolidatedOperationsState
+     */
+    public function logConsolidationResult(array $initialOperations, array $consolidatedOperationsState): void
     {
         $initialOperationsState = [];
-        $initialOperations = $operationConsolidationResult->getInitialOperations();
         foreach ($initialOperations as $key => $operation) {
             $initialOperationsState[] = sprintf('(%s) %s', $key, $this->getClassNameBase($operation::class));
         }
 
         $logMessageParts = [];
-        $consolidatedOperationsState = $operationConsolidationResult->getConsolidatedOperationsState();
         foreach ($consolidatedOperationsState as $initialOperationIndex => $consolidatedOperationsStateItem) {
             $operationClassNameBase = $this->getClassNameBase($initialOperations[$initialOperationIndex]::class);
             $logMessageParts[] = sprintf(

@@ -4,6 +4,7 @@ namespace BrandEmbassy\UnitOfWork;
 
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 use Psr\Log\Test\TestLogger;
 
 /**
@@ -24,7 +25,7 @@ class OperationConsolidatorTest extends TestCase
         OperationConsolidationMode $consolidationMode
     ): void {
         $logger = new TestLogger();
-        $reducer = new OperationConsolidator($logger);
+        $reducer = new OperationConsolidator(new OperationConsolidatorResultLogger($logger));
 
         $result = $reducer->consolidate($operationsToMerge, $consolidationMode);
 
@@ -68,7 +69,7 @@ class OperationConsolidatorTest extends TestCase
                 'consolidationMode' => $dryRunUnlimitedMode,
             ],
             'New merging enabled. All mergeable operations are merged' => [
-                'expectedLogMessage' => 'UoW Operations [(0) DefaultMergeableOperation, (1) NotMergeableOperation, (2) AnotherDefaultMergeableOperation, (3) DefaultMergeableOperation, (4) AnotherDefaultMergeableOperation, (5) DefaultMergeableOperation, (6) NotMergeableOperation, (7) NotMergeableOperation, (8) DefaultMergeableOperation, (9) AnotherDefaultMergeableOperation] got merged into [(1) NotMergeableOperation, (6) NotMergeableOperation, (7) NotMergeableOperation, (0, 3, 5, 8) DefaultMergeableOperation, (2, 4, 9) AnotherDefaultMergeableOperation]',
+                'expectedLogMessage' => 'UoW Operations [(0) DefaultMergeableOperation, (1) NotMergeableOperation, (2) TestOnlyMergeableOperation, (3) DefaultMergeableOperation, (4) TestOnlyMergeableOperation, (5) DefaultMergeableOperation, (6) NotMergeableOperation, (7) NotMergeableOperation, (8) DefaultMergeableOperation, (9) TestOnlyMergeableOperation] got merged into [(1) NotMergeableOperation, (6) NotMergeableOperation, (7) NotMergeableOperation, (0, 3, 5, 8) DefaultMergeableOperation, (2, 4, 9) TestOnlyMergeableOperation]',
                 'expectedOperations' => [
                     new NotMergeableOperation(),
                     new NotMergeableOperation(),
@@ -157,7 +158,7 @@ class OperationConsolidatorTest extends TestCase
 
     public function testShouldReduce(): void
     {
-        $reducer = new OperationConsolidator(new TestLogger());
+        $reducer = new OperationConsolidator(new OperationConsolidatorResultLogger(new NullLogger()));
 
         $operations = [
             new DefaultMergeableOperation('a'),
@@ -186,7 +187,7 @@ class OperationConsolidatorTest extends TestCase
 
     public function testShouldMergeLastTwo(): void
     {
-        $reducer = new OperationConsolidator(new TestLogger());
+        $reducer = new OperationConsolidator(new OperationConsolidatorResultLogger(new NullLogger()));
 
         $operations = [
             new DefaultMergeableOperation('a'),
@@ -209,7 +210,7 @@ class OperationConsolidatorTest extends TestCase
      */
     public function testShouldReduceTrivial(array $data): void
     {
-        $reducer = new OperationConsolidator(new TestLogger());
+        $reducer = new OperationConsolidator(new OperationConsolidatorResultLogger(new NullLogger()));
         Assert::assertEquals($data, $reducer->consolidate($data, new OperationConsolidationMode()));
     }
 
