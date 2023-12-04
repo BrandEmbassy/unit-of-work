@@ -27,4 +27,10 @@ class DefaultMergeableOperation implements MergeableOperation
 
         return new self($this->text . '+' . $nextOperation->text);
     }
+
+
+    public function isChainBreakFor(Operation $operation): bool
+    {
+        return false;
+    }
 }

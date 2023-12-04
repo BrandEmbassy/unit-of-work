@@ -96,6 +96,16 @@ class OperationConsolidator
 
             for ($nextOperationIndex = $currentOperationIndex + 1; $nextOperationIndex < $operationsCount; $nextOperationIndex++) {
                 $nextOperation = $operations[$nextOperationIndex];
+                if ($nextOperation === null) {
+                    continue;
+                }
+
+                if ($nextOperation->isChainBreakFor($mergedOperation)) {
+                    $consolidatedOperations[$currentOperationIndex] = $mergedOperation;
+                    $consolidatedOperationsState[$currentOperationIndex] = [$currentOperationIndex];
+                    continue 2;
+                }
+
                 if (!$nextOperation instanceof MergeableOperation) {
                     continue;
                 }

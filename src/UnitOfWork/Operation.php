@@ -4,5 +4,5 @@ namespace BrandEmbassy\UnitOfWork;
 
 interface Operation
 {
-    // TODO: isChainBreak will be added here
+    public function isChainBreakFor(self $operation): bool;
 }
