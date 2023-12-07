@@ -5,10 +5,10 @@ namespace BrandEmbassy\UnitOfWork;
 /**
  * @final
  */
-class NotMergeableOperation implements Operation
+class TestOnlyChainBreakingOperation implements Operation
 {
     public function isChainBreakFor(Operation $operation): bool
     {
-        return false;
+        return $operation instanceof TestOnlyMergeableOperation;
     }
 }
