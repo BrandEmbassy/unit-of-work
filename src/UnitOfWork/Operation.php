@@ -2,7 +2,9 @@
 
 namespace BrandEmbassy\UnitOfWork;
 
-interface Operation
+use Stringable;
+
+interface Operation extends Stringable
 {
     public function isChainBreakFor(self $operation): bool;
 }

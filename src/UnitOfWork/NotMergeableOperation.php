@@ -5,10 +5,6 @@ namespace BrandEmbassy\UnitOfWork;
 /**
  * @final
  */
-class NotMergeableOperation implements Operation
+class NotMergeableOperation extends AbstractOperation
 {
-    public function isChainBreakFor(Operation $operation): bool
-    {
-        return false;
-    }
 }
