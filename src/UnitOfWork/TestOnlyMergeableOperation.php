@@ -7,7 +7,7 @@ use function assert;
 /**
  * @final
  */
-class TestOnlyMergeableOperation implements MergeableOperation
+class TestOnlyMergeableOperation extends AbstractOperation implements MergeableOperation
 {
     public function __construct(
         public readonly string $text
@@ -26,11 +26,5 @@ class TestOnlyMergeableOperation implements MergeableOperation
         assert($nextOperation instanceof self);
 
         return new self($this->text . '+' . $nextOperation->text);
-    }
-
-
-    public function isChainBreakFor(Operation $operation): bool
-    {
-        return false;
     }
 }

@@ -4,12 +4,10 @@ namespace BrandEmbassy\UnitOfWork;
 
 use Psr\Log\LoggerInterface;
 use function array_values;
-use function basename;
 use function count;
 use function implode;
 use function ksort;
 use function sprintf;
-use function str_replace;
 
 /**
  * @final
@@ -45,12 +43,12 @@ class OperationConsolidatorLogger
 
         $initialOperationsState = [];
         foreach ($initialOperations as $key => $operation) {
-            $initialOperationsState[] = sprintf('(%s) %s', $key, $this->getClassNameBase($operation::class));
+            $initialOperationsState[] = sprintf('(%s) %s', $key, $operation);
         }
 
         $logMessageParts = [];
         foreach ($consolidatedOperationsState as $initialOperationIndex => $consolidatedOperationsStateItem) {
-            $operationClassNameBase = $this->getClassNameBase($initialOperations[$initialOperationIndex]::class);
+            $operationClassNameBase = (string)$initialOperations[$initialOperationIndex];
             $logMessageParts[] = sprintf(
                 '(%s) %s',
                 implode(self::LOG_MESSAGE_OPERATIONS_SEPARATOR, array_values($consolidatedOperationsStateItem)),
@@ -64,11 +62,5 @@ class OperationConsolidatorLogger
         );
 
         $this->logger->debug($logMessage);
-    }
-
-
-    private function getClassNameBase(string $className): string
-    {
-        return basename(str_replace('\\', '/', $className));
     }
 }
