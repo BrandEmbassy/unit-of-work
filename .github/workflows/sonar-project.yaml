@@ -174,3 +174,4 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: "https://sonar.nice.com"
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
