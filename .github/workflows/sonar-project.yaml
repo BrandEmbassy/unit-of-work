@@ -27,7 +27,7 @@ jobs:
         run: composer install --prefer-dist
 
       - name: Run PHPUnit tests and Generate covwerage report
-        run: vendor/bin/phpunit --coverage-clover=coverage.xml
+        run: vendor/bin/phpunit --coverage-clover=coverage.xml --testdox
         
   sonarqube:
     runs-on: ubuntu-latest
