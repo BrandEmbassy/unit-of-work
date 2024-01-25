@@ -55,10 +55,11 @@ jobs:
           extensions: mbstring, sockets
       - name: Install dependencies
         run: composer ${{ matrix.composer-arg }} --prefer-dist
+        
       - name: Run tests with phpunit/phpunit
-        run: |
-          vendor/bin/phpunit --coverage-clover=coverage.xml
+        run: vendor/bin/phpunit --coverage-clover=coverage.xml- --testdox
       - name: Debug Information
+      
         run:  |
           php --version
           composer --version
