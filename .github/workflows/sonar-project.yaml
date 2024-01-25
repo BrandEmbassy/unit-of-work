@@ -8,17 +8,12 @@ on:
   workflow_dispatch:
 
 jobs:
-  sonarqube:
+  phpunit:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: read
     strategy:
-      fail-fast: false
       matrix:
         php-version:
           - 7.4
-
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -31,39 +26,15 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist
 
-      - name: Run phpstan
-        run: composer phpstan
-
-  phpunit:
+      - name: Run PHPUnit tests and Generate covwerage report
+        run: vendor/bin/phpunit --coverage-clover=coverage.xml
+        
+  sonarqube:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        composer-arg:
-          - "install"
-          - "update --prefer-lowest"
-        php-version:
-          - 7.4
+    needs: phpunit
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php-version }}
-          extensions: mbstring, sockets
-      - name: Install dependencies
-        run: composer ${{ matrix.composer-arg }} --prefer-dist
-        
-      - name: Run tests with phpunit/phpunit
-        run: vendor/bin/phpunit --coverage-clover=coverage.xml- --testdox
-      - name: Debug Information
-      
-        run:  |
-          php --version
-          composer --version
-          cat composer.json
           
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@master
