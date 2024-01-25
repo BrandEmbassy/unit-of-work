@@ -57,6 +57,12 @@ jobs:
         run: composer ${{ matrix.composer-arg }} --prefer-dist
       - name: Run tests with phpunit/phpunit
         run: vendor/bin/phpunit --coverage-clover=coverage.xml
+      - name: Debug Information
+        run:
+          php --version
+          composer --version
+          cat composer.json
+          
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@master
         env:
