@@ -31,7 +31,7 @@ jobs:
         run: composer install --prefer-dist
 
       - name: Run PHPUnit tests and Generate coverage report
-        run: vendor/bin/phpunit --coverage-clover=coverage.xml --testdox --verbose
+        run: vendor/bin/phpunit --verbose
         
   sonarqube:
     runs-on: ubuntu-latest
