@@ -1,5 +1,6 @@
 vendor/
 temp/
 composer.lock
-.phpunit.result.cache
-
+.phpunit.cache
+coverage.xml
+test-report.xml
