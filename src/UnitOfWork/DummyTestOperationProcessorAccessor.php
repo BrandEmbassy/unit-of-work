@@ -7,10 +7,7 @@ namespace BrandEmbassy\UnitOfWork;
  */
 class DummyTestOperationProcessorAccessor implements OperationProcessorAccessor
 {
-    /**
-     * @var OperationProcessor
-     */
-    private $operationProcessor;
+    private OperationProcessor $operationProcessor;
 
 
     public function __construct(OperationProcessor $operationProcessor)

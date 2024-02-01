@@ -31,7 +31,7 @@ class UnitOfWorkReducerTest extends TestCase
         $expectedOperationsCount = count($expectedOperationsAfterReduction);
         Assert::assertCount($expectedOperationsCount, $actualOperationsAfterReduction);
 
-        for ($i = 0; $i < $expectedOperationsCount; $i++) {
+        for ($i = 0; $i < $expectedOperationsCount; ++$i) {
             Assert::assertSame($expectedOperationsAfterReduction[$i], $actualOperationsAfterReduction[$i]);
         }
     }

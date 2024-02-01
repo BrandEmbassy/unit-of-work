@@ -1,27 +1,31 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.6/phpunit.xsd"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
          bootstrap="vendor/autoload.php"
-         cacheResultFile=".phpunit.cache/test-results"
+         colors="true"
+         cacheDirectory="var/.phpunit.cache"
          executionOrder="depends,defects"
-         forceCoversAnnotation="false"
-         beStrictAboutCoversAnnotation="true"
+         requireCoverageMetadata="false"
+         beStrictAboutCoverageMetadata="true"
          beStrictAboutOutputDuringTests="true"
-         beStrictAboutTodoAnnotatedTests="true"
-         convertDeprecationsToExceptions="true"
          failOnRisky="true"
-         failOnWarning="true"
-         verbose="true">
+         failOnWarning="true">
     <testsuites>
         <testsuite name="default">
             <directory>src</directory>
         </testsuite>
     </testsuites>
-
-    <coverage cacheDirectory=".phpunit.cache/code-coverage"
-              processUncoveredFiles="true">
+    <coverage>
+        <report>
+            <html outputDirectory="./var/code-coverage" lowUpperBound="50" highLowerBound="80"/>
+        </report>
+    </coverage>
+    <source>
         <include>
             <directory suffix=".php">src</directory>
         </include>
-    </coverage>
+        <exclude>
+            <directory suffix="Test.php">src</directory>
+        </exclude>
+    </source>
 </phpunit>

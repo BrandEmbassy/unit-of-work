@@ -5,7 +5,6 @@ namespace BrandEmbassy\UnitOfWork;
 use function array_pop;
 use function array_reverse;
 use function array_values;
-use function count;
 
 /**
  * @final
@@ -28,7 +27,7 @@ class OperationConsolidator
         /** @var Operation[] $merged */
         $merged = [array_pop($operations)];
 
-        while (count($operations) > 0) {
+        while ($operations !== []) {
             /** @var Operation $previous */
             $previous = array_pop($merged);
             /** @var Operation $current */
