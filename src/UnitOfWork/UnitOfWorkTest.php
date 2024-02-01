@@ -14,6 +14,7 @@ class UnitOfWorkTest extends TestCase
     {
         $unitOfWorkA = new UnitOfWork();
         $unitOfWorkA->registerOperation(new MergeableOperation(1));
+
         $unitOfWorkB = new UnitOfWork();
         $unitOfWorkB->registerOperation(new MergeableOperation(2));
 

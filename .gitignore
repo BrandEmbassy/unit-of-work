@@ -1,5 +1,6 @@
 vendor/
-temp/
+/var/*
+!.gitkeep
 composer.lock
 .phpunit.cache
 coverage.xml

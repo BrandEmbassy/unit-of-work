@@ -7,15 +7,9 @@ namespace BrandEmbassy\UnitOfWork;
  */
 class ReducingUnitOfWorkExecutor implements UnitOfWorkExecutor
 {
-    /**
-     * @var OperationConsolidator
-     */
-    private $consolidator;
+    private OperationConsolidator $consolidator;
 
-    /**
-     * @var UnitOfWorkExecutor
-     */
-    private $unitOfWorkExecutor;
+    private UnitOfWorkExecutor $unitOfWorkExecutor;
 
 
     public function __construct(UnitOfWorkExecutor $unitOfWorkExecutor, OperationConsolidator $consolidator)

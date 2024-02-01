@@ -7,15 +7,15 @@
     }
   },
   "require": {
-    "php": "^7.4 || >=8.1",
+    "php": ">=8.1",
     "beberlei/assert": "^3.2",
     "psr/log": "^1.1"
   },
   "require-dev": {
-    "brandembassy/coding-standard": "10.0.0-beta",
+    "brandembassy/coding-standard": "^11.1",
     "mockery/mockery": "^1.5.1",
     "nette/utils": "^2.4 || ^3.0",
-    "phpunit/phpunit": "^9.6.6",
+    "phpunit/phpunit": "^10.0",
     "roave/security-advisories": "dev-latest"
   },
   "scripts": {
@@ -23,8 +23,10 @@
     "fix-cs": "vendor/bin/ecs check --fix --ansi",
     "phpstan": "php -dxdebug.mode=off vendor/bin/phpstan analyse --memory-limit=-1",
     "phpstan-generate-baseline": "php -dxdebug.mode=off vendor/bin/phpstan analyse --memory-limit=-1 --generate-baseline",
-    "test": "./vendor/bin/phpunit",
-    "test-with-coverage": "php -dxdebug.mode=coverage ./vendor/bin/phpunit --coverage-clover=coverage.xml --log-junit=test-report.xml"
+    "phpunit": "./vendor/bin/phpunit --no-coverage",
+    "phpunit-cc": "php -dxdebug.mode=coverage ./vendor/bin/phpunit --coverage-clover=coverage.xml --log-junit=test-report.xml",
+    "check-rector": "vendor/bin/rector process --dry-run --ansi",
+    "fix-rector": "vendor/bin/rector process --ansi"
   },
   "minimum-stability": "dev",
   "prefer-stable": true,

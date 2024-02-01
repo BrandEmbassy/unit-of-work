@@ -4,126 +4,50 @@ on: [pull_request, workflow_dispatch]
 
 jobs:
   phpstan:
-    runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
       matrix:
         php-version:
-          - 7.4
           - 8.1
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php-version }}
-          extensions: mbstring, sockets
-
-      - name: Get composer cache directory
-        id: composercache
-        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-
-      - name: Cache composer dependencies
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.composercache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: ${{ runner.os }}-composer-
-
-      - name: Install dependencies
-        run: composer install --prefer-dist
-
-      - name: Run phpstan
-        run: composer phpstan
-
+          - 8.2
+    uses: BrandEmbassy/github-actions/.github/workflows/php-phpstan.yml@master
+    with:
+      PHP_VERSION: ${{ matrix.php-version }}
 
   ecs:
-    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         php-version:
-          - 7.4
           - 8.1
+          - 8.2
+    uses: BrandEmbassy/github-actions/.github/workflows/php-ecs.yml@master
+    with:
+      PHP_VERSION: ${{ matrix.php-version }}
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php-version }}
-          extensions: mbstring, sockets
-
-      - name: Get composer cache directory
-        id: composercache
-        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-
-      - name: Cache composer dependencies
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.composercache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: ${{ runner.os }}-composer-
-
-      - name: Install dependencies
-        run: composer install --prefer-dist
-
-      - name: Run code-sniffer
-        run: composer check-cs
-
+  rector:
+    uses: BrandEmbassy/github-actions/.github/workflows/php-rector.yml@master
+    with:
+      PHP_VERSION: '8.1'
+      RECTOR_CACHE_PATH: './var/rector'
 
   phpunit:
-    runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
       matrix:
         composer-arg:
           - "install"
           - "update --prefer-lowest"
         php-version:
-          - 7.4
           - 8.1
+          - 8.2
+        exclude:
+          - composer-arg: install
+            php-version: 8.1
+    uses: BrandEmbassy/github-actions/.github/workflows/php-phpunit.yml@master
+    with:
+      COMPOSER_ARG: ${{ matrix.composer-arg }}
+      PHP_VERSION: ${{ matrix.php-version }}
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php-version }}
-          extensions: mbstring, sockets${{ matrix.php-version == '8.1' && matrix.composer-arg == 'install' && ', xdebug' || '' }}
-
-      - name: Get composer cache directory
-        id: composercache
-        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-
-      - name: Cache composer dependencies
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.composercache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: ${{ runner.os }}-composer-
-
-      - name: Install dependencies
-        run: composer ${{ matrix.composer-arg }} --prefer-dist
-
-      - name: Run tests
-        run: composer test
-        if: matrix.php-version != '8.1' && matrix.composer-arg != 'install'
-
-      - name: Run tests with coverage
-        run: composer test-with-coverage
-        if: matrix.php-version == '8.1' && matrix.composer-arg == 'install'
-
-      - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@master
-        if: matrix.php-version == '8.1' && matrix.composer-arg == 'install'
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: "https://sonar.nice.com"
+  phpunit-with-sonar-qube:
+    uses: BrandEmbassy/github-actions/.github/workflows/php-phpunit-with-sonar-qube.yml@master
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

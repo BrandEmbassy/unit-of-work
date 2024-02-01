@@ -16,12 +16,9 @@ class NaiveUnitOfWorkExecutor implements UnitOfWorkExecutor
     /**
      * @var OperationProcessorAccessor[]
      */
-    private $operationProcessorAccessors;
+    private array $operationProcessorAccessors;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
+    private LoggerInterface $logger;
 
 
     /**

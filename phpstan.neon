@@ -6,4 +6,4 @@ parameters:
     paths:
         - src
 
-    tmpDir: temp/phpstan
+    tmpDir: var/phpstan

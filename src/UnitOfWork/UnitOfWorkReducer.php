@@ -17,11 +17,12 @@ class UnitOfWorkReducer
         $index = 0;
 
         while (count($operations) > $index && $operations[$index]->canBeMergedWith($operationToReduceBy)) {
-            $index++;
+            ++$index;
         }
+
         while (count($operations) > $index) {
             $operationsAfterReduction[] = $operations[$index];
-            $index++;
+            ++$index;
         }
 
         return UnitOfWork::fromOperations($operationsAfterReduction);
