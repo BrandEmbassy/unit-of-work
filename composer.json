@@ -15,7 +15,7 @@
     "brandembassy/coding-standard": "^11.1",
     "mockery/mockery": "^1.5.1",
     "nette/utils": "^2.4 || ^3.0",
-    "phpunit/phpunit": "^10.0",
+    "phpunit/phpunit": "^10.5",
     "roave/security-advisories": "dev-latest"
   },
   "scripts": {
